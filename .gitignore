@@ -1,0 +1,63 @@
+# Build results
+bin/
+obj/
+Debug/
+Release/
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build results
+*.exe
+*.dll
+*.pdb
+*.cache
+*.config
+
+# Temporary files
+*.log
+*.tmp
+*.temp
+
+# Visual Studio generated files
+*.dbmdl
+*.opendb
+
+# Other
+*.vspscc
+*.vssscc
+*.userprefs
+*.ncb
+*.aps
+*.res
+*.sdf
+*.sqlite
+*.db
+
+# Ignore publish and packages
+publish/
+packages/
+
+# DotCover, ReSharper, Rider
+.idea/
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# Backup and Misc
+*.bak
+*.backup
+*.orig
+*.old
+*.swp
+*.swo
+
+# NuGet
+*.nupkg
+.nuget/
+
+# MacOS and Windows junk
+.DS_Store
+Thumbs.db

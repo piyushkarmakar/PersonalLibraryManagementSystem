@@ -1,0 +1,4 @@
+1|Ramayan|Balmiki|Mythology|Finished|4|10/23/2025 10:21:27 AM|10/23/2025 11:03:39 AM|10/30/2025 7:59:52 AM|One of the Best Mythological book i have ever read|True
+2|MahaBharat|Ved Vyas|Mythology|CurrentlyReading|0|10/23/2025 10:38:48 AM|10/30/2025 10:48:56 AM|||True
+3|Experiment in Plant Hybridisation|Sir John Gregor Mendel|Biography|ToRead|0|10/23/2025 11:01:26 AM||||False
+4|The Hidden Hindu|Akshat Gupta|Mythology|Finished|0|10/30/2025 7:53:53 AM|10/30/2025 7:57:52 AM|||False
