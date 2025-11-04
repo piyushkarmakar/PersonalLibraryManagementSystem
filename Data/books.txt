@@ -1,3 +1,6 @@
+===========================================================================================================================================
+ID|BookName|Author|Genre|Status|Rating|DateAdded|DateStarted|DateFinished|Review|IsLent
+===========================================================================================================================================
 1|Ramayan|Balmiki|Mythology|Finished|4|10/23/2025 10:21:27 AM|10/23/2025 11:03:39 AM|10/30/2025 7:59:52 AM|One of the Best Mythological book i have ever read|True
 2|MahaBharat|Ved Vyas|Mythology|CurrentlyReading|5|10/23/2025 10:38:48 AM|10/30/2025 10:48:56 AM||If you want to know proper politics please watch Mahabharat|True
 3|Experiment in Plant Hybridisation|Sir John Gregor Mendel|Biography|CurrentlyReading|3|10/23/2025 11:01:26 AM|||Sir John Gregor Mendel is done best experiment using the pea tree to prove inheritance theory |False

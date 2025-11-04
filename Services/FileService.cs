@@ -14,6 +14,12 @@ namespace PersonalLibraryManagementSystem.Services
         public static void SaveBooks(List<Book> books, string path)
         {
             List<string> lines = new List<string>();
+
+            // Add header line
+            lines.Add("===========================================================================================================================================");
+            lines.Add("ID|BookName|Author|Genre|Status|Rating|DateAdded|DateStarted|DateFinished|Review|IsLent");
+            lines.Add("===========================================================================================================================================");
+
             foreach (Book b in books)
             {
                 string line = b.Id + "|" + b.Title + "|" + b.Author + "|" + b.Genre + "|" +
@@ -32,7 +38,14 @@ namespace PersonalLibraryManagementSystem.Services
             string[] lines = File.ReadAllLines(path);
             foreach (string line in lines)
             {
+                // Skip header or empty lines
+                if (string.IsNullOrWhiteSpace(line) ||
+                    line.StartsWith("ID") ||
+                    line.StartsWith("="))
+                    continue;
                 string[] parts = line.Split('|');
+                if (parts.Length < 11)
+                    continue;
                 Book book = new()
                 {
                     Id = int.Parse(parts[0]),
@@ -60,6 +73,12 @@ namespace PersonalLibraryManagementSystem.Services
             string[] lines = File.ReadAllLines(path);
             foreach (string line in lines)
             {
+                // Skip header or blank lines
+
+                if (string.IsNullOrWhiteSpace(line) ||
+                    line.StartsWith("Name") ||
+                    line.StartsWith("="))
+                    continue;
                 string[] parts = line.Split('|');
                 Friend friend = new()
                 {
@@ -69,7 +88,7 @@ namespace PersonalLibraryManagementSystem.Services
 
                     BooksCurrentlyBorrowed = new List<int>()
                 };
-                if (parts.Length > 3)
+                if (parts.Length > 3 && !string.IsNullOrEmpty(parts[3]))
                 {
                     string[] borrowed = parts[3].Split(',');
                     foreach (string s in borrowed)
@@ -89,6 +108,11 @@ namespace PersonalLibraryManagementSystem.Services
         public static void SaveFriends(List<Friend> friends, string path)
         {
             List<string> lines = new List<string>();
+            lines.Add("=====================================================");
+            lines.Add("Name|Email|Phone");
+            lines.Add("=====================================================");
+
+
             foreach (Friend f in friends)
             {
                 string borrowed = string.Join(",", f.BooksCurrentlyBorrowed);
@@ -106,7 +130,13 @@ namespace PersonalLibraryManagementSystem.Services
             string[] lines = File.ReadAllLines(path);
             foreach (string line in lines)
             {
+                // Skip header or empty line
+                if (string.IsNullOrWhiteSpace(line) ||
+                    line.StartsWith("ID") ||
+                    line.StartsWith("="))
+                    continue;
                 string[] parts = line.Split('|');
+                if (parts.Length < 5) continue;
                 LendingRecord record = new()
                 {
                     BookId = int.Parse(parts[0]),
@@ -123,6 +153,11 @@ namespace PersonalLibraryManagementSystem.Services
         public static void SaveLendingRecords(List<LendingRecord> lendingRecords, string path)
         {
             List<string> lines = new List<string>();
+            lines.Add("==========================================================================================================");
+            lines.Add("ID|FriendName|BorrowedOn|DueDate|Returned");
+            lines.Add("==========================================================================================================");
+
+
             foreach (LendingRecord r in lendingRecords)
             {
                 string line = r.BookId + "|" + r.FriendName + "|" + r.LendDate + "|" + r.DueDate + "|" + r.ReturnDate;
