@@ -26,7 +26,11 @@ namespace PersonalLibraryManagementSystem.Menus
                 switch (choice)
                 {
                     case "1":
-                        Console.Write("Enter title: ");
+                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("                       ADD NEW A BOOK IN LIBRARY");
+                        Console.WriteLine("=========================================================================================");
+
+                        Console.Write("\n\n Enter title: ");
                         string title = Console.ReadLine();
 
                         Console.Write("Enter author: ");
@@ -69,23 +73,40 @@ namespace PersonalLibraryManagementSystem.Menus
                         newBook.IsLent = false;             // Not lent out yet
 
                         libraryService.Add(newBook);
+                        Console.WriteLine("=========================================================================================");
+
                         Console.WriteLine("\nBook \"" + title + "\" added successfully!");
                         break;
 
                     case "2":
-                        Console.WriteLine("\n--- All Books ---");
+                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("                       VIEW ALL BOOKS");
+                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("=========================================================================================");
+                        
                         foreach (var book in libraryService.GetAllBooks())
                             book.DisplayDetails();
+                        Console.WriteLine("=========================================================================================");
+
                         break;
 
                     case "3":
+                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("                       SEARCH A BOOK");
+                        Console.WriteLine("=========================================================================================");
+
                         Console.Write("\nEnter title or author to search: ");
                         string query = Console.ReadLine();
                         foreach (var book in libraryService.Search(query))
                             book.DisplayDetails();
+                        Console.WriteLine("=========================================================================================");
                         break;
 
                     case "4":
+                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("                       UPDATE A BOOK ");
+                        Console.WriteLine("=========================================================================================");
+
                         Console.Write("Enter Book ID to update: \n");
                         Console.WriteLine("Book id : Book Name");
                         foreach (var book in libraryService.GetAllBooks())
@@ -125,18 +146,26 @@ namespace PersonalLibraryManagementSystem.Menus
                                 bookToUpdate.Review = newReview;
 
                             libraryService.Update(updateId, bookToUpdate);
+                            Console.WriteLine("=========================================================================================");
+
                             Console.WriteLine("\nBook updated successfully!");
                         }
                         else Console.WriteLine("Book not found.");
                         break;
 
                     case "5":
+                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("                       REMOVE A BOOK");
+                        Console.WriteLine("=========================================================================================");
+
                         Console.Write("Enter Book ID to remove: \n");
                         Console.WriteLine("Book id : Book Name");
                         foreach (var book in libraryService.GetAllBooks())
                             Console.Write($"{book.Id}:{book.Title}\n");
                         int removeId = int.Parse(Console.ReadLine() ?? "0");
                         libraryService.Remove(removeId);
+                        Console.WriteLine("=========================================================================================");
+
                         Console.WriteLine("Book removed successfully!");
                         break;
 
