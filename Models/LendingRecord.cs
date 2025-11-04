@@ -15,17 +15,7 @@ namespace PersonalLibraryManagementSystem.Models
         public DateTime LendDate { get; set; }
         public DateTime DueDate { get; set; }
         public DateTime? ReturnDate { get; set; }
-        public bool IsOverdue
-        {
-            get
-            {
-                if (ReturnDate.HasValue)
-                {
-                    return ReturnDate.Value > DueDate;
-                }
-                return false;
-            }
-        }
+
 
         public void MarkAsReturned()
         {
@@ -40,6 +30,17 @@ namespace PersonalLibraryManagementSystem.Models
             int overdueDays = (ReturnDate.Value - DueDate).Days;
             return overdueDays > 0 ? overdueDays : 0;
 
+        }
+        public bool IsOverdue
+        {
+            get
+            {
+                if (ReturnDate.HasValue)
+                {
+                    return ReturnDate.Value > DueDate;
+                }
+                return false;
+            }
         }
     }
 }

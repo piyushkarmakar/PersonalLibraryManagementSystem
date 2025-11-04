@@ -86,7 +86,11 @@ namespace PersonalLibraryManagementSystem.Menus
                         break;
 
                     case "4":
-                        Console.Write("Enter Book ID to update: ");
+                        Console.Write("Enter Book ID to update: \n");
+                        Console.WriteLine("Book id : Book Name");
+                        foreach (var book in libraryService.GetAllBooks())
+                            Console.Write($"{book.Id}:{book.Title}\n");
+                            
                         int updateId = int.Parse(Console.ReadLine() ?? "0");
                         var bookToUpdate = libraryService.GetById(updateId);
                         if (bookToUpdate != null)
@@ -105,6 +109,21 @@ namespace PersonalLibraryManagementSystem.Menus
                             int newStatus = int.Parse(Console.ReadLine() ?? "1");
                             bookToUpdate.Status = (BookStatus)(newStatus - 1);
 
+
+                            Console.Write("Enter new rating (1-5, or 0 to skip): ");
+                            string ratingInput = Console.ReadLine();
+                            if (!string.IsNullOrWhiteSpace(ratingInput))
+                            {
+                                int newRating = int.Parse(ratingInput);
+                                if (newRating >= 1 && newRating <= 5)
+                                    bookToUpdate.Rating = newRating;
+                            }
+
+                            Console.Write("Enter new review (leave blank to keep same): ");
+                            string newReview = Console.ReadLine();
+                            if (!string.IsNullOrWhiteSpace(newReview))
+                                bookToUpdate.Review = newReview;
+
                             libraryService.Update(updateId, bookToUpdate);
                             Console.WriteLine("\nBook updated successfully!");
                         }
@@ -112,7 +131,10 @@ namespace PersonalLibraryManagementSystem.Menus
                         break;
 
                     case "5":
-                        Console.Write("Enter Book ID to remove: ");
+                        Console.Write("Enter Book ID to remove: \n");
+                        Console.WriteLine("Book id : Book Name");
+                        foreach (var book in libraryService.GetAllBooks())
+                            Console.Write($"{book.Id}:{book.Title}\n");
                         int removeId = int.Parse(Console.ReadLine() ?? "0");
                         libraryService.Remove(removeId);
                         Console.WriteLine("Book removed successfully!");

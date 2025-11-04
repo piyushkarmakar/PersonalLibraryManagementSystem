@@ -42,23 +42,40 @@ namespace PersonalLibraryManagementSystem.Menus
                             friend.Phone = phone;
 
                             friendService.Add(friend);
-                            Console.WriteLine("Friend added successfully!");
+                            Console.WriteLine("=========================================================================================");
+
+                            Console.WriteLine("\n Friend added successfully!");
+
                             break;
                         }
                     case "2":
-
-                        Console.WriteLine("\n--- Friends List ---");
+                        Console.WriteLine("==============================================================");
+                        Console.WriteLine("                FRIENDS LIST                           ");
+                        Console.WriteLine("==============================================================");
 
                         List<Friend> friends = (List<Friend>)friendService.GetAllFriends();
                         foreach (Friend friend in friends)
                         {
                             Console.WriteLine(friend.Name + " | " + friend.Email + " | " + friend.Phone);
                         }
+                        Console.WriteLine("==============================================================");
+
                         break;
 
                     case "3":
+                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("                       LEND A BOOK");
+                        Console.WriteLine("=========================================================================================");
+
+                        Console.WriteLine("\n============================================================");
+                        foreach (var book in libraryService.GetAllBooks())
+                            Console.Write($"{book.Id} : {book.Title}\n");
+                        Console.WriteLine("==============================================================");
+                        
                         Console.Write("Book ID: ");
                         int bookId = int.Parse(Console.ReadLine() ?? "0");
+
+                    
 
                         Console.Write("Friend Name: ");
                         string friendName = Console.ReadLine();
@@ -67,10 +84,21 @@ namespace PersonalLibraryManagementSystem.Menus
                         DateTime dueDate = DateTime.Parse(Console.ReadLine() ?? DateTime.Now.ToString("yyyy-MM-dd"));
 
                         lendingService.LendBook(bookId, friendName, dueDate);
-                        Console.WriteLine("Book lent successfully!");
+                        Console.WriteLine("=========================================================================================");
+
+                        Console.WriteLine("\n Book lent successfully!");
                         break;
 
                     case "4":
+                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("                       RETURN BOOK");
+                        Console.WriteLine("=========================================================================================");
+
+                        Console.WriteLine("\n==============================================================");
+                        foreach (var book in libraryService.GetAllBooks())
+                            Console.Write($"{book.Id} : {book.Title}\n");
+                        Console.WriteLine("==============================================================");
+
                         Console.Write("Enter Book ID to return: ");
                         int returnBookId = int.Parse(Console.ReadLine() ?? "0");
 
@@ -78,18 +106,44 @@ namespace PersonalLibraryManagementSystem.Menus
                         string returnFriend = Console.ReadLine();
 
                         lendingService.ReturnBook(returnBookId, returnFriend);
-                        Console.WriteLine("Book returned successfully!");
+                        Console.WriteLine("=========================================================================================");
+
+                        Console.WriteLine("\n Book returned successfully!");
                         break;
 
                     case "5":
-                        Console.WriteLine("\n--- Lending Records ---");
+                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("                       LENDING RECORDS");
+                        Console.WriteLine("=========================================================================================");
 
+                        foreach (var book in libraryService.GetAllBooks())
+                            Console.Write($"{book.Id} : {book.Title} \n");
+
+                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("{0,-5} {1,-25} {2,-15} {3,-12} {4,-12} {5,-15}",
+                            "ID", "Book Name", "Friend Name", "Borrowed On", "Due Date", "Returned");
+                        Console.WriteLine("=========================================================================================");
+
+
+                       
                         foreach (var record in lendingService.GetAllRecords())
                         {
-                            string returnDate = record.ReturnDate?.ToString("yyyy-MM-dd") ?? "Pending";
-                            Console.WriteLine($"{record.BookId} | {record.FriendName} | {record.LendDate:yyyy-MM-dd} -> {record.DueDate:yyyy-MM-dd} | Returned: {returnDate}");
+                            var book = libraryService.GetById(record.BookId);
+                            string bookTitle = book != null ? book.Title : "Unknown";
+                            string returned = record.ReturnDate.HasValue
+                                ? record.ReturnDate.Value.ToString("yyyy-MM-dd")
+                                : "Pending";
+
+                            Console.WriteLine("{0,-5} {1,-25} {2,-15} {3,-12} {4,-12} {5,-15}",
+                                record.BookId,
+                                bookTitle,
+                                record.FriendName,
+                                record.LendDate.ToString("yyyy-MM-dd"),
+                                record.DueDate.ToString("yyyy-MM-dd"),
+                                returned);
                         }
 
+                        Console.WriteLine("=========================================================================================");
                         break;
 
                     case "0":

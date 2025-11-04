@@ -38,6 +38,8 @@ namespace PersonalLibraryManagementSystem.Models
         public override void DisplayDetails()
         {
             Console.WriteLine($"{Id}: {Title} by {Author} | Genre: {Genre} | Status: {Status}");
+            Console.WriteLine($"Rating: {(Rating > 0 ? Rating.ToString() : "Not Rated")}");
+            Console.WriteLine($"Review: {(string.IsNullOrWhiteSpace(Review) ? "No Review" : Review)} \n");
         }
 
     }

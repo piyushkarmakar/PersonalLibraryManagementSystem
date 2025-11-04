@@ -9,30 +9,30 @@ using PersonalLibraryManagementSystem.Models;
 namespace PersonalLibraryManagementSystem.Services
 {
 
-        public static class FileService
+    public static class FileService
+    {
+        public static void SaveBooks(List<Book> books, string path)
         {
-            public static void SaveBooks(List<Book> books, string path)
+            List<string> lines = new List<string>();
+            foreach (Book b in books)
             {
-                List<string> lines = new List<string>();
-                foreach (Book b in books)
-                {
-                    string line = b.Id + "|" + b.Title + "|" + b.Author + "|" + b.Genre + "|" +
-                                  b.Status + "|" + b.Rating + "|" + b.DateAdded + "|" +
-                                  b.DateStarted + "|" + b.DateFinished + "|" + b.Review + "|" + b.IsLent;
-                    lines.Add(line);
-                }
-                File.WriteAllLines(path, lines);
+                string line = b.Id + "|" + b.Title + "|" + b.Author + "|" + b.Genre + "|" +
+                              b.Status + "|" + b.Rating + "|" + b.DateAdded + "|" +
+                              b.DateStarted + "|" + b.DateFinished + "|" + b.Review + "|" + b.IsLent;
+                lines.Add(line);
             }
+            File.WriteAllLines(path, lines);
+        }
 
-            public static List<Book> LoadBooks(string path)
+        public static List<Book> LoadBooks(string path)
+        {
+            List<Book> books = new List<Book>();
+            if (!File.Exists(path)) return books;
+
+            string[] lines = File.ReadAllLines(path);
+            foreach (string line in lines)
             {
-                List<Book> books = new List<Book>();
-                if (!File.Exists(path)) return books;
-
-                string[] lines = File.ReadAllLines(path);
-                foreach (string line in lines)
-                {
-                    string[] parts = line.Split('|');
+                string[] parts = line.Split('|');
                 Book book = new()
                 {
                     Id = int.Parse(parts[0]),
@@ -48,19 +48,19 @@ namespace PersonalLibraryManagementSystem.Services
                     IsLent = bool.Parse(parts[10])
                 };
                 books.Add(book);
-                }
-                return books;
             }
+            return books;
+        }
 
-            public static List<Friend> LoadFriends(string path)
+        public static List<Friend> LoadFriends(string path)
+        {
+            List<Friend> friends = new List<Friend>();
+            if (!File.Exists(path)) return friends;
+
+            string[] lines = File.ReadAllLines(path);
+            foreach (string line in lines)
             {
-                List<Friend> friends = new List<Friend>();
-                if (!File.Exists(path)) return friends;
-
-                string[] lines = File.ReadAllLines(path);
-                foreach (string line in lines)
-                {
-                    string[] parts = line.Split('|');
+                string[] parts = line.Split('|');
                 Friend friend = new()
                 {
                     Name = parts[0],
@@ -70,43 +70,43 @@ namespace PersonalLibraryManagementSystem.Services
                     BooksCurrentlyBorrowed = new List<int>()
                 };
                 if (parts.Length > 3)
+                {
+                    string[] borrowed = parts[3].Split(',');
+                    foreach (string s in borrowed)
                     {
-                        string[] borrowed = parts[3].Split(',');
-                        foreach (string s in borrowed)
+                        if (!string.IsNullOrEmpty(s))
                         {
-                            if (!string.IsNullOrEmpty(s))
-                            {
-                                friend.BooksCurrentlyBorrowed.Add(int.Parse(s));
-                            }
+                            friend.BooksCurrentlyBorrowed.Add(int.Parse(s));
                         }
                     }
-
-                    friends.Add(friend);
                 }
-                return friends;
+
+                friends.Add(friend);
             }
+            return friends;
+        }
 
-            public static void SaveFriends(List<Friend> friends, string path)
+        public static void SaveFriends(List<Friend> friends, string path)
+        {
+            List<string> lines = new List<string>();
+            foreach (Friend f in friends)
             {
-                List<string> lines = new List<string>();
-                foreach (Friend f in friends)
-                {
-                    string borrowed = string.Join(",", f.BooksCurrentlyBorrowed);
-                    string line = f.Name + "|" + f.Email + "|" + f.Phone + "|" + borrowed;
-                    lines.Add(line);
-                }
-                File.WriteAllLines(path, lines);
+                string borrowed = string.Join(",", f.BooksCurrentlyBorrowed);
+                string line = f.Name + "|" + f.Email + "|" + f.Phone + "|" + borrowed;
+                lines.Add(line);
             }
+            File.WriteAllLines(path, lines);
+        }
 
-            public static List<LendingRecord> LoadLendingRecords(string path)
+        public static List<LendingRecord> LoadLendingRecords(string path)
+        {
+            List<LendingRecord> records = new List<LendingRecord>();
+            if (!File.Exists(path)) return records;
+
+            string[] lines = File.ReadAllLines(path);
+            foreach (string line in lines)
             {
-                List<LendingRecord> records = new List<LendingRecord>();
-                if (!File.Exists(path)) return records;
-
-                string[] lines = File.ReadAllLines(path);
-                foreach (string line in lines)
-                {
-                    string[] parts = line.Split('|');
+                string[] parts = line.Split('|');
                 LendingRecord record = new()
                 {
                     BookId = int.Parse(parts[0]),
@@ -116,21 +116,25 @@ namespace PersonalLibraryManagementSystem.Services
                     ReturnDate = string.IsNullOrEmpty(parts[4]) ? null : DateTime.Parse(parts[4])
                 };
                 records.Add(record);
-                }
-                return records;
             }
-
-            public static void SaveLendingRecords(List<LendingRecord> lendingRecords, string path)
-            {
-                List<string> lines = new List<string>();
-                foreach (LendingRecord r in lendingRecords)
-                {
-                    string line = r.BookId + "|" + r.FriendName + "|" + r.LendDate + "|" + r.DueDate + "|" + r.ReturnDate;
-                    lines.Add(line);
-                }
-                File.WriteAllLines(path, lines);
-            }
+            return records;
         }
-    
 
+        public static void SaveLendingRecords(List<LendingRecord> lendingRecords, string path)
+        {
+            List<string> lines = new List<string>();
+            foreach (LendingRecord r in lendingRecords)
+            {
+                string line = r.BookId + "|" + r.FriendName + "|" + r.LendDate + "|" + r.DueDate + "|" + r.ReturnDate;
+                lines.Add(line);
+            }
+            File.WriteAllLines(path, lines);
+        }
+
+
+
+
+
+
+    }
 }

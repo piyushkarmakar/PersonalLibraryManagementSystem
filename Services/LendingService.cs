@@ -24,35 +24,35 @@ namespace PersonalLibraryManagementSystem.Services
                 this.friendService = friends;
             }
 
-            // Lend a book to a friend
-            public bool LendBook(int bookId, string friendName, DateTime dueDate)
+        // Lend a book to a friend
+        public bool LendBook(int bookId ,string friendName, DateTime dueDate)
+        {
+            var book = libraryService.GetById(bookId);
+            var friend = friendService.Search(friendName).FirstOrDefault();
+
+            if (book == null || friend == null || book.IsLent)
+                return false;
+
+            // Mark book as lent
+            book.IsLent = true;
+
+            // Add book to friend's borrowed list
+            friend.BorrowBook(bookId);
+
+            // Create a lending record
+            lendingRecords.Add(new LendingRecord
             {
-                var book = libraryService.GetById(bookId);
-                var friend = friendService.Search(friendName).FirstOrDefault();
+                BookId = bookId,
+                FriendName = friend.Name,
+                LendDate = DateTime.Now,
+                DueDate = dueDate
+            });
 
-                if (book == null || friend == null || book.IsLent)
-                    return false;
+            return true;
+        }
 
-                // Mark book as lent
-                book.IsLent = true;
-
-                // Add book to friend's borrowed list
-                friend.BorrowBook(bookId);
-
-                // Create a lending record
-                lendingRecords.Add(new LendingRecord
-                {
-                    BookId = bookId,
-                    FriendName = friend.Name,
-                    LendDate = DateTime.Now,
-                    DueDate = dueDate
-                });
-
-                return true;
-            }
-
-            // Return a book
-            public bool ReturnBook(int bookId, string friendName)
+        // Return a book
+        public bool ReturnBook(int bookId, string friendName)
             {
                 LendingRecord record = null;
                 foreach (var r in lendingRecords)
