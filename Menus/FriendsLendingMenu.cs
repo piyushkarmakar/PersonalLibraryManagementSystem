@@ -71,11 +71,11 @@ namespace PersonalLibraryManagementSystem.Menus
                         foreach (var book in libraryService.GetAllBooks())
                             Console.Write($"{book.Id} : {book.Title}\n");
                         Console.WriteLine("==============================================================");
-                        
+
                         Console.Write("Book ID: ");
                         int bookId = int.Parse(Console.ReadLine() ?? "0");
 
-                    
+
 
                         Console.Write("Friend Name: ");
                         string friendName = Console.ReadLine();
@@ -125,7 +125,7 @@ namespace PersonalLibraryManagementSystem.Menus
                         Console.WriteLine("=========================================================================================");
 
 
-                       
+
                         foreach (var record in lendingService.GetAllRecords())
                         {
                             var book = libraryService.GetById(record.BookId);

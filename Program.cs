@@ -11,8 +11,8 @@ namespace PersonalLibraryManagementSystem
 {
     class Program
     {
-         static void Main(String[] arges)
-         {
+        static void Main(String[] arges)
+        {
 
             string bookFilePath = "C:\\ASP .NET\\LibraryManagementSystem\\PersonalLibraryManagementSystem\\Data\\books.txt";
             string friendFilePath = "C:\\ASP .NET\\LibraryManagementSystem\\PersonalLibraryManagementSystem\\Data\\friends.txt";

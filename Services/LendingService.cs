@@ -11,21 +11,21 @@ namespace PersonalLibraryManagementSystem.Services
 
 
 
-        public class LendingService
-        {
-            private List<LendingRecord> lendingRecords;
-            private LibraryService libraryService;
-            private FriendService friendService;
+    public class LendingService
+    {
+        private List<LendingRecord> lendingRecords;
+        private LibraryService libraryService;
+        private FriendService friendService;
 
-            public LendingService(List<LendingRecord> lendingRecords, LibraryService library, FriendService friends)
-            {
-                this.lendingRecords = lendingRecords;
-                this.libraryService = library;
-                this.friendService = friends;
-            }
+        public LendingService(List<LendingRecord> lendingRecords, LibraryService library, FriendService friends)
+        {
+            this.lendingRecords = lendingRecords;
+            this.libraryService = library;
+            this.friendService = friends;
+        }
 
         // Lend a book to a friend
-        public bool LendBook(int bookId ,string friendName, DateTime dueDate)
+        public bool LendBook(int bookId, string friendName, DateTime dueDate)
         {
             var book = libraryService.GetById(bookId);
             var friend = friendService.Search(friendName).FirstOrDefault();
@@ -53,73 +53,73 @@ namespace PersonalLibraryManagementSystem.Services
 
         // Return a book
         public bool ReturnBook(int bookId, string friendName)
+        {
+            LendingRecord record = null;
+            foreach (var r in lendingRecords)
             {
-                LendingRecord record = null;
-                foreach (var r in lendingRecords)
+                if (r.BookId == bookId &&
+                    r.FriendName != null &&
+                    r.FriendName.Equals(friendName, StringComparison.OrdinalIgnoreCase) &&
+                    r.ReturnDate == null)
                 {
-                    if (r.BookId == bookId &&
-                        r.FriendName != null &&
-                        r.FriendName.Equals(friendName, StringComparison.OrdinalIgnoreCase) &&
-                        r.ReturnDate == null)
-                    {
-                        record = r;
-                        break;
-                    }
-                }
-
-                Book book = libraryService.GetById(bookId);
-                Friend friend = null;
-                foreach (var f in friendService.Search(friendName))
-                {
-                    friend = f;
+                    record = r;
                     break;
                 }
-
-                if (record == null || book == null || friend == null)
-                {
-                    return false;
-                }
-
-                // Mark as returned
-                record.MarkAsReturned();
-                book.IsLent = false;
-                friend.ReturnBook(bookId);
-
-                return true;
             }
 
-
-
-            public List<LendingRecord> GetAllRecords()
+            Book book = libraryService.GetById(bookId);
+            Friend friend = null;
+            foreach (var f in friendService.Search(friendName))
             {
-                return lendingRecords;
+                friend = f;
+                break;
             }
 
-
-
-
-            // View all lent books
-            public List<LendingRecord> GetAllLentBooks()
+            if (record == null || book == null || friend == null)
             {
-                return lendingRecords;
+                return false;
             }
 
+            // Mark as returned
+            record.MarkAsReturned();
+            book.IsLent = false;
+            friend.ReturnBook(bookId);
 
-            // Check overdue books
-            public List<LendingRecord> GetOverdueBooks()
-            {
-                List<LendingRecord> overdueRecords = new List<LendingRecord>();
-
-                foreach (LendingRecord r in lendingRecords)
-                {
-                    if (!r.ReturnDate.HasValue && DateTime.Now > r.DueDate)
-                    {
-                        overdueRecords.Add(r);
-                    }
-                }
-
-                return overdueRecords;
-            }
+            return true;
         }
+
+
+
+        public List<LendingRecord> GetAllRecords()
+        {
+            return lendingRecords;
+        }
+
+
+
+
+        // View all lent books
+        public List<LendingRecord> GetAllLentBooks()
+        {
+            return lendingRecords;
+        }
+
+
+        // Check overdue books
+        public List<LendingRecord> GetOverdueBooks()
+        {
+            List<LendingRecord> overdueRecords = new List<LendingRecord>();
+
+            foreach (LendingRecord r in lendingRecords)
+            {
+                if (!r.ReturnDate.HasValue && DateTime.Now > r.DueDate)
+                {
+                    overdueRecords.Add(r);
+                }
+            }
+
+            return overdueRecords;
+        }
+    }
 
 }
