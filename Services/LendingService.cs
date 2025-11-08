@@ -16,101 +16,164 @@ namespace PersonalLibraryManagementSystem.Services
         private List<LendingRecord> lendingRecords;
         private LibraryService libraryService;
         private FriendService friendService;
+        private bool useDatabase = false;
+        private DatabaseService dbService;
 
-        public LendingService(List<LendingRecord> lendingRecords, LibraryService library, FriendService friends)
+
+        // File Mode
+        public LendingService(List<LendingRecord> records, LibraryService libraryService, FriendService friendService)
         {
-            this.lendingRecords = lendingRecords;
-            this.libraryService = library;
-            this.friendService = friends;
+            this.lendingRecords = records;
+            this.libraryService = libraryService;
+            this.friendService = friendService;
+            this.useDatabase = false;
         }
+
+        // SQL Mode
+        public LendingService(string connectionString, LibraryService libraryService, FriendService friendService)
+        {
+            this.dbService = new DatabaseService(connectionString);
+            this.libraryService = libraryService;
+            this.friendService = friendService;
+            this.lendingRecords = dbService.GetAllLendingRecords();
+            this.useDatabase = true;
+        }
+
 
         // Lend a book to a friend
         public bool LendBook(int bookId, string friendName, DateTime dueDate)
         {
-            var book = libraryService.GetById(bookId);
-            var friend = friendService.Search(friendName).FirstOrDefault();
+            Book book = libraryService.GetById(bookId);
+            Friend friend = friendService.GetByName(friendName);
 
-            if (book == null || friend == null || book.IsLent)
+            if (book == null || friend == null)
+            {
+                Console.WriteLine("⚠ Book or Friend not found.");
                 return false;
+            }
 
-            // Mark book as lent
+            if (book.IsLent)
+            {
+                Console.WriteLine("⚠ Book is already lent to someone else.");
+                return false;
+            }
+
+            // Create a new lending record
+            LendingRecord record = new LendingRecord();
+            record.BookId = bookId;
+            record.BookName = book.Title;
+            record.FriendName = friend.Name;
+            record.LendDate = DateTime.Now;
+            record.DueDate = dueDate;
+            record.ReturnDate = null;
+
+            if (useDatabase)
+            {
+                dbService.AddLendingRecord(record);
+                lendingRecords = dbService.GetAllLendingRecords();
+            }
+            else
+            {
+                lendingRecords.Add(record);
+            }
+
+            // Update friend & book status
             book.IsLent = true;
-
-            // Add book to friend's borrowed list
             friend.BorrowBook(bookId);
 
-            // Create a lending record
-            lendingRecords.Add(new LendingRecord
-            {
-                BookId = bookId,
-                FriendName = friend.Name,
-                LendDate = DateTime.Now,
-                DueDate = dueDate
-            });
-
+            Console.WriteLine("✅ Book lent successfully.");
             return true;
+        
         }
 
         // Return a book
         public bool ReturnBook(int bookId, string friendName)
         {
+            Book book = libraryService.GetById(bookId);
+            Friend friend = friendService.GetByName(friendName);
+
+            if (book == null || friend == null)
+            {
+                Console.WriteLine("⚠ Invalid book or friend name.");
+                return false;
+            }
+
             LendingRecord record = null;
-            foreach (var r in lendingRecords)
+            foreach (LendingRecord r in lendingRecords)
             {
                 if (r.BookId == bookId &&
-                    r.FriendName != null &&
                     r.FriendName.Equals(friendName, StringComparison.OrdinalIgnoreCase) &&
-                    r.ReturnDate == null)
+                    !r.ReturnDate.HasValue)
                 {
                     record = r;
                     break;
                 }
             }
 
-            Book book = libraryService.GetById(bookId);
-            Friend friend = null;
-            foreach (var f in friendService.Search(friendName))
+            if (record == null)
             {
-                friend = f;
-                break;
-            }
-
-            if (record == null || book == null || friend == null)
-            {
+                Console.WriteLine("⚠ No active lending record found for this book and friend.");
                 return false;
             }
 
-            // Mark as returned
-            record.MarkAsReturned();
+            if (useDatabase)
+            {
+                dbService.MarkAsReturned(bookId, friendName);
+                lendingRecords = dbService.GetAllLendingRecords();
+            }
+            else
+            {
+                record.MarkAsReturned();
+            }
+
+            // Update status in memory
             book.IsLent = false;
             friend.ReturnBook(bookId);
 
+            Console.WriteLine("✅ Book returned successfully.");
             return true;
+
         }
 
 
 
+        // 🔹 Get all lending records
         public List<LendingRecord> GetAllRecords()
         {
+            if (useDatabase)
+            {
+                return dbService.GetAllLendingRecords();
+            }
             return lendingRecords;
         }
 
-
-
-
-        // View all lent books
+        // 🔹 Get all lent books
         public List<LendingRecord> GetAllLentBooks()
         {
-            return lendingRecords;
+            List<LendingRecord> lentBooks = new List<LendingRecord>();
+            List<LendingRecord> source = useDatabase ? dbService.GetAllLendingRecords() : lendingRecords;
+
+            foreach (LendingRecord record in source)
+            {
+                // only include books not yet returned
+                if (!record.ReturnDate.HasValue)
+                {
+                    lentBooks.Add(record);
+                }
+            }
+
+            return lentBooks;
         }
 
 
-        // Check overdue books
+
+        // 🔹 Get overdue books
         public List<LendingRecord> GetOverdueBooks()
         {
             List<LendingRecord> overdueRecords = new List<LendingRecord>();
+            List<LendingRecord> source = useDatabase ? dbService.GetAllLendingRecords() : lendingRecords;
 
-            foreach (LendingRecord r in lendingRecords)
+            foreach (LendingRecord r in source)
             {
                 if (!r.ReturnDate.HasValue && DateTime.Now > r.DueDate)
                 {
@@ -120,6 +183,9 @@ namespace PersonalLibraryManagementSystem.Services
 
             return overdueRecords;
         }
+
+
+
     }
 
 }

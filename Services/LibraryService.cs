@@ -7,7 +7,6 @@ using PersonalLibraryManagementSystem.Enums;
 using PersonalLibraryManagementSystem.Interfaces;
 using PersonalLibraryManagementSystem.Models;
 
-
 namespace PersonalLibraryManagementSystem.Services
 {
 
@@ -17,23 +16,66 @@ namespace PersonalLibraryManagementSystem.Services
         public class LibraryService : ISearchable<Book>, IManageable<Book>
         {
             private List<Book> books;
+            private bool useDatabase = false;         // flag for mode
+            private DatabaseService dbService;
 
-            public LibraryService(List<Book> books)
+        public LibraryService(List<Book> books)
             {
                 this.books = books;
+                useDatabase = false;
+
             }
 
+        public LibraryService(string connectionString)
+        {
+            this.dbService = new DatabaseService(connectionString);
+            useDatabase = true;
+            this.books = dbService.GetAllBooks();
+        }
 
 
-            public void Add(Book book)
+
+
+        public int GenerateNextBookId()
+        {
+            if (books.Count == 0) return 1;
+
+            int maxId = 0;
+            foreach (Book b in books)
+            {
+                if (b.Id > maxId)
+                {
+                    maxId = b.Id;
+                }
+            }
+            return maxId + 1;
+        }
+
+
+        // Add Book
+        public void Add(Book book)
+        {
+            if (useDatabase)
+            {
+                dbService.AddBook(book);
+                books = dbService.GetAllBooks();
+            }
+            else
             {
                 books.Add(book);
             }
+        }
 
 
-            public void Update(int id, Book updatedBook)
+        public void Update(int id, Book updatedBook)
             {
-                var book = GetById(id);
+            if (useDatabase)
+            {
+                dbService.UpdateBook(updatedBook);
+            }
+            else
+            {
+                Book book = GetById(id);
                 if (book != null)
                 {
                     book.Title = updatedBook.Title;
@@ -42,10 +84,17 @@ namespace PersonalLibraryManagementSystem.Services
                     book.Status = updatedBook.Status;
                 }
             }
+        }
 
 
 
             public void Remove(int id)
+            {
+            if (useDatabase)
+            {
+                dbService.DeleteBook(id);
+            }
+            else
             {
                 for (int i = 0; i < books.Count; i++)
                 {
@@ -56,6 +105,7 @@ namespace PersonalLibraryManagementSystem.Services
                     }
                 }
             }
+        }
 
 
             public Book GetById(int id)
@@ -89,59 +139,60 @@ namespace PersonalLibraryManagementSystem.Services
             }
 
 
-            public int GenerateNextBookId()
-            {
-                if (books.Count == 0)
-                {
-                    return 1;
-                }
 
-                int maxId = 0;
-                foreach (Book b in books)
-                {
-                    if (b.Id > maxId)
-                    {
-                        maxId = b.Id;
-                    }
-                }
-
-                return maxId + 1;
-            }
 
 
 
         public List<Book> GetAllBooks()
         {
+            if (useDatabase)
+                return dbService.GetAllBooks();
             return books;
         }
 
         public void StartReading(int id)
+        {
+            var book = GetById(id);
+            if (book != null)
             {
-                var book = GetById(id);
-                if (book != null)
-                    book.MarkAsReading();
+                book.MarkAsReading();
+
+                if (useDatabase)
+                    dbService.UpdateBook(book);  // 🔹 update DB
             }
-
-
-
-            public void FinishReading(int id)
-            {
-                var book = GetById(id);
-                if (book != null)
-                    book.Status = Enums.BookStatus.Finished;
-            }
-
-
-
-            public void AddRating(int id, int rating, string review)
-            {
-                var book = GetById(id);
-                if (book != null)
-                    book.FinishReading(rating, review);
-            }
-
-
         }
+
+
+
+        public void FinishReading(int id)
+        {
+            var book = GetById(id);
+            if (book != null)
+            {
+                book.Status = Enums.BookStatus.Finished;
+                book.DateFinished = DateTime.Now;
+
+                if (useDatabase)
+                    dbService.UpdateBook(book);  // 🔹 update DB
+            }
+        }
+
+
+
+        public void AddRating(int id, int rating, string review)
+        {
+            var book = GetById(id);
+            if (book != null)
+            {
+                book.FinishReading(rating, review);
+
+                if (useDatabase)
+                    dbService.UpdateBook(book);  // 🔹 update DB
+            }
+        }
+
+
+    }
 
     
 

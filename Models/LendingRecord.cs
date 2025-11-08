@@ -11,7 +11,8 @@ namespace PersonalLibraryManagementSystem.Models
 
 
         public int BookId { get; set; }
-        public required string FriendName { get; set; }
+        public string BookName { get; set; }   
+        public string FriendName { get; set; }
         public DateTime LendDate { get; set; }
         public DateTime DueDate { get; set; }
         public DateTime? ReturnDate { get; set; }
@@ -22,25 +23,6 @@ namespace PersonalLibraryManagementSystem.Models
             ReturnDate = DateTime.Now;
         }
 
-        public int CalculateOverdueDays()
-        {
-            if (!ReturnDate.HasValue)
-                return 0;
 
-            int overdueDays = (ReturnDate.Value - DueDate).Days;
-            return overdueDays > 0 ? overdueDays : 0;
-
-        }
-        public bool IsOverdue
-        {
-            get
-            {
-                if (ReturnDate.HasValue)
-                {
-                    return ReturnDate.Value > DueDate;
-                }
-                return false;
-            }
-        }
     }
 }

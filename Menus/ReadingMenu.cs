@@ -1,6 +1,5 @@
 ﻿using System;
 using PersonalLibraryManagementSystem.Services;
-using PersonalLibraryManagementSystem.Services;
 
 namespace PersonalLibraryManagementSystem.Menus
 {
@@ -36,7 +35,7 @@ namespace PersonalLibraryManagementSystem.Menus
                         libraryService.StartReading(int.Parse(Console.ReadLine() ?? "0"));
                         Console.WriteLine("=========================================================================================");
 
-                        Console.WriteLine("Book marked as Currently Reading!");
+                        Console.WriteLine("Book status updated to Currently Reading!");
                         break;
 
                     case "2":
@@ -50,6 +49,8 @@ namespace PersonalLibraryManagementSystem.Menus
                         Console.Write("Enter Book ID: ");
                         libraryService.FinishReading(int.Parse(Console.ReadLine() ?? "0"));
                         Console.WriteLine("Book marked as Finished!");
+                        Console.WriteLine("=========================================================================================");
+
                         break;
 
                     case "3":
