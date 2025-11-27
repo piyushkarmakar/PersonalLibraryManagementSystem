@@ -1,7 +1,7 @@
-﻿using PersonalLibraryManagementSystem.Models;
-using PersonalLibraryManagementSystem.Services;
-using System;
+﻿using System;
 using System.Reflection;
+using PersonalLibraryManagementSystem.Models;
+using PersonalLibraryManagementSystem.Services;
 namespace PersonalLibraryManagementSystem.Menus
 {
     public static class FriendsLendingMenu

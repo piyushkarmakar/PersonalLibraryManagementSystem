@@ -136,14 +136,14 @@ namespace PersonalLibraryManagementSystem.Services
                     line.StartsWith("="))
                     continue;
                 string[] parts = line.Split('|');
-                if (parts.Length < 5) continue;
                 LendingRecord record = new()
                 {
                     BookId = int.Parse(parts[0]),
-                    FriendName = parts[1],
-                    LendDate = DateTime.Parse(parts[2]),
-                    DueDate = DateTime.Parse(parts[3]),
-                    ReturnDate = string.IsNullOrEmpty(parts[4]) ? null : DateTime.Parse(parts[4])
+                    BookName = parts[1],
+                    FriendName = parts[2],
+                    LendDate = DateTime.Parse(parts[3]),
+                    DueDate = DateTime.Parse(parts[4]),
+                    ReturnDate = string.IsNullOrEmpty(parts[5]) ? null : DateTime.Parse(parts[4])
                 };
                 records.Add(record);
             }
@@ -154,13 +154,13 @@ namespace PersonalLibraryManagementSystem.Services
         {
             List<string> lines = new List<string>();
             lines.Add("==========================================================================================================");
-            lines.Add("ID|FriendName|BorrowedOn|DueDate|Returned");
+            lines.Add("ID|BookName|FriendName|BorrowedOn|DueDate|Returned");
             lines.Add("==========================================================================================================");
 
 
             foreach (LendingRecord r in lendingRecords)
             {
-                string line = r.BookId + "|" + r.FriendName + "|" + r.LendDate + "|" + r.DueDate + "|" + r.ReturnDate;
+                string line = r.BookId + "|" + r.BookName + "|" + r.FriendName + "|" + r.LendDate + "|" + r.DueDate + "|" + r.ReturnDate;
                 lines.Add(line);
             }
             File.WriteAllLines(path, lines);

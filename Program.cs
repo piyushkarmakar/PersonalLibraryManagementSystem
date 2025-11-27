@@ -19,9 +19,9 @@ namespace PersonalLibraryManagementSystem
             string connectionString = "Data Source=localhost;Initial Catalog=PersonalLibraryDB;Integrated Security=True;TrustServerCertificate=True;";
 
 
-            string bookFilePath = "C:\\ASP .NET\\LibraryManagementSystem\\PersonalLibraryManagementSystem\\Data\\books.txt";
-            string friendFilePath = "C:\\ASP .NET\\LibraryManagementSystem\\PersonalLibraryManagementSystem\\Data\\friends.txt";
-            string lendingFilePath = "C:\\ASP .NET\\LibraryManagementSystem\\PersonalLibraryManagementSystem\\Data\\lending_records.txt";
+            string bookFilePath = "C:\\ASP .NET\\PersonalLibraryManagementSystem\\PersonalLibraryManagementSystem\\Data\\books.txt";
+            string friendFilePath = "C:\\ASP .NET\\PersonalLibraryManagementSystem\\PersonalLibraryManagementSystem\\Data\\friends.txt";
+            string lendingFilePath = "C:\\ASP .NET\\PersonalLibraryManagementSystem\\PersonalLibraryManagementSystem\\Data\\lending_records.txt";
 
             // Ask user for mode
             Console.WriteLine("========================================");
