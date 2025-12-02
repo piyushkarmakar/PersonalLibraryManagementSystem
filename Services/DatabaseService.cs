@@ -160,6 +160,18 @@ namespace PersonalLibraryManagementSystem.Services
             }
         }
 
+        public void DeleteFriendByName(string name)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string query = "DELETE FROM Friends WHERE Name=@name";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@name", name);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
 
 
         // 🔹 Get All Friends
@@ -174,7 +186,7 @@ namespace PersonalLibraryManagementSystem.Services
                 while (reader.Read())
                 {
                     Friend friend = new Friend();
-                    friend.Id = Convert.ToInt32(reader["Id"]);  // <-- Add this
+                    friend.Id = Convert.ToInt32(reader["Id"]);  
                     friend.Name = reader["Name"].ToString();
                     friend.Email = reader["Email"].ToString();
                     friend.Phone = reader["Phone"].ToString();
