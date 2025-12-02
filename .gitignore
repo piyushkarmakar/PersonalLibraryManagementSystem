@@ -57,7 +57,7 @@ _ReSharper*/
 # NuGet
 *.nupkg
 .nuget/
-
+.vs/
 # MacOS and Windows junk
 .DS_Store
 Thumbs.db
