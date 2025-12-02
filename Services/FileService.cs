@@ -74,23 +74,23 @@ namespace PersonalLibraryManagementSystem.Services
             foreach (string line in lines)
             {
                 // Skip header or blank lines
-
                 if (string.IsNullOrWhiteSpace(line) ||
-                    line.StartsWith("Name") ||
-                    line.StartsWith("="))
+                line.StartsWith("Id") ||
+                line.StartsWith("="))
                     continue;
-                string[] parts = line.Split('|');
-                Friend friend = new()
-                {
-                    Name = parts[0],
-                    Email = parts[1],
-                    Phone = parts[2],
 
+                string[] parts = line.Split('|');
+                Friend friend = new Friend
+                {
+                    Id = int.Parse(parts[0]),       // read ID
+                    Name = parts[1],
+                    Email = parts[2],
+                    Phone = parts[3],
                     BooksCurrentlyBorrowed = new List<int>()
                 };
-                if (parts.Length > 3 && !string.IsNullOrEmpty(parts[3]))
+                if (parts.Length > 4 && !string.IsNullOrEmpty(parts[3]))
                 {
-                    string[] borrowed = parts[3].Split(',');
+                    string[] borrowed = parts[4].Split(',');
                     foreach (string s in borrowed)
                     {
                         if (!string.IsNullOrEmpty(s))
@@ -109,14 +109,15 @@ namespace PersonalLibraryManagementSystem.Services
         {
             List<string> lines = new List<string>();
             lines.Add("=====================================================");
-            lines.Add("Name|Email|Phone");
+            lines.Add("Id|Name|Email|Phone");
             lines.Add("=====================================================");
 
-
+            int id = 1;
             foreach (Friend f in friends)
             {
+                f.Id = id++;
                 string borrowed = string.Join(",", f.BooksCurrentlyBorrowed);
-                string line = f.Name + "|" + f.Email + "|" + f.Phone + "|" + borrowed;
+                string line = f.Id + "|" +f.Name + "|" + f.Email + "|" + f.Phone + "|" + borrowed;
                 lines.Add(line);
             }
             File.WriteAllLines(path, lines);

@@ -131,6 +131,36 @@ namespace PersonalLibraryManagementSystem.Services
                 cmd.ExecuteNonQuery();
             }
         }
+        // 🔹 Update Friend by Id
+        public void UpdateFriendById(Friend friend)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string query = "UPDATE Friends SET Name=@Name, Email=@Email, Phone=@Phone WHERE Id=@Id";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@Id", friend.Id);
+                cmd.Parameters.AddWithValue("@Name", friend.Name);
+                cmd.Parameters.AddWithValue("@Email", friend.Email);
+                cmd.Parameters.AddWithValue("@Phone", friend.Phone);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        // 🔹 Delete Friend by Id
+        public void DeleteFriendById(int id)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string query = "DELETE FROM Friends WHERE Id=@Id";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@Id", id);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+
 
         // 🔹 Get All Friends
         public List<Friend> GetAllFriends()
@@ -144,6 +174,7 @@ namespace PersonalLibraryManagementSystem.Services
                 while (reader.Read())
                 {
                     Friend friend = new Friend();
+                    friend.Id = Convert.ToInt32(reader["Id"]);  // <-- Add this
                     friend.Name = reader["Name"].ToString();
                     friend.Email = reader["Email"].ToString();
                     friend.Phone = reader["Phone"].ToString();
@@ -152,6 +183,7 @@ namespace PersonalLibraryManagementSystem.Services
             }
             return friends;
         }
+
 
 
         // 🔹 Add Lending Record

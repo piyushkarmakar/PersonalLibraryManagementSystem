@@ -40,12 +40,15 @@ namespace PersonalLibraryManagementSystem.Menus
                 Console.WriteLine("========================================");
                 Console.WriteLine("1. Add Friend");
                 Console.WriteLine("2. View All Friends");
-                Console.WriteLine("3. Lend a Book");
-                Console.WriteLine("4. Return a Book");
-                Console.WriteLine("5. View Lending Records");
-                Console.WriteLine("6. View Currently Lent Books");
-                Console.WriteLine("7. View Overdue Books");
+                Console.WriteLine("3. Update Friend");
+                Console.WriteLine("4. Delete Friend");
+                Console.WriteLine("5. Lend a Book");
+                Console.WriteLine("6. Return a Book");
+                Console.WriteLine("7. View Lending Records");
+                Console.WriteLine("8. View Currently Lent Books");
+                Console.WriteLine("9. View Overdue Books");
                 Console.WriteLine("0. Back to Main Menu");
+
                 Console.Write("\nEnter your choice: ");
                 string choice = Console.ReadLine();
 
@@ -75,20 +78,122 @@ namespace PersonalLibraryManagementSystem.Menus
                             break;
                         }
                     case "2":
-                        Console.WriteLine("=========================================================================================");
-                        Console.WriteLine("                FRIENDS LIST                           ");
-                        Console.WriteLine("=========================================================================================");
+                        var friends = friendService.GetAllFriends().ToList();
 
-                        List<Friend> friends = (List<Friend>)friendService.GetAllFriends();
-                        foreach (Friend friend in friends)
+                        if (friends.Count == 0)
                         {
-                            Console.WriteLine(friend.Name + " | " + friend.Email + " | " + friend.Phone);
+                            Console.WriteLine("No friends found.");
                         }
+                        else
+                        {
+                            Console.WriteLine("{0,-5} {1,-20} {2,-25} {3,-15}", "ID", "Name", "Email", "Phone");
+                            Console.WriteLine("--------------------------------------------------------------------");
+
+                            foreach (var friend in friends)
+                            {
+                                Console.WriteLine("{0,-5} {1,-20} {2,-25} {3,-15}",
+                                    friend.Id, friend.Name, friend.Email, friend.Phone);
+                            }
+                        }
+
+                        Console.WriteLine("=========================================================================================");
+                        break;
+                    case "3":
+                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("                     UPDATE FRIEND");
+                        Console.WriteLine("=========================================================================================");
+                        var friendsForUpdate = friendService.GetAllFriends().ToList();
+                        if (friendsForUpdate.Count == 0)
+                        {
+                            Console.WriteLine("No friends available to update.");
+                            break;
+                        }
+
+                        Console.WriteLine("{0,-5} {1,-20} {2,-25} {3,-15}", "ID", "Name", "Email", "Phone");
+                        Console.WriteLine("--------------------------------------------------------------------");
+
+                        foreach (var fr in friendsForUpdate)
+                        {
+                            Console.WriteLine("{0,-5} {1,-20} {2,-25} {3,-15}",
+                                fr.Id, fr.Name, fr.Email, fr.Phone);
+                        }
+
+                        Console.Write("\nEnter Friend ID to update: ");
+                        int updateId = int.Parse(Console.ReadLine());
+
+                        // ✔ FIXED – Find friend by actual Friend.Id, not list index
+                        Friend existingFriend = friendsForUpdate.FirstOrDefault(f => f.Id == updateId);
+
+                        if (existingFriend == null)
+                        {
+                            Console.WriteLine("Friend not found!");
+                            break;
+                        }
+
+                        Console.Write("New Name (Enter to skip): ");
+                        string nn = Console.ReadLine();
+                        Console.Write("New Email (Enter to skip): ");
+                        string ne = Console.ReadLine();
+                        Console.Write("New Phone (Enter to skip): ");
+                        string np = Console.ReadLine();
+
+                        Friend updatedFriend = new Friend
+                        {
+                            Id = existingFriend.Id,
+                            Name = string.IsNullOrEmpty(nn) ? existingFriend.Name : nn,
+                            Email = string.IsNullOrEmpty(ne) ? existingFriend.Email : ne,
+                            Phone = string.IsNullOrEmpty(np) ? existingFriend.Phone : np
+                        };
+
+                        friendService.Update(updateId, updatedFriend);
+
                         Console.WriteLine("=========================================================================================");
 
+                        Console.WriteLine("Friend updated successfully!");
+                        break;
+                    case "4":
+                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("                     DELETE FRIEND");
+                        Console.WriteLine("=========================================================================================");
+
+                        var friendsForDelete = friendService.GetAllFriends().ToList();
+
+                        if (friendsForDelete.Count == 0)
+                        {
+                            Console.WriteLine("No friends available to delete.");
+                            break;
+                        }
+
+                        Console.WriteLine("{0,-5} {1,-20} {2,-25} {3,-15}", "ID", "Name", "Email", "Phone");
+                        Console.WriteLine("--------------------------------------------------------------------");
+
+                        foreach (var fr in friendsForDelete)
+                        {
+                            Console.WriteLine("{0,-5} {1,-20} {2,-25} {3,-15}",
+                                fr.Id, fr.Name, fr.Email, fr.Phone);
+                        }
+
+                        Console.Write("\nEnter Friend ID to delete: ");
+                        int deleteId = int.Parse(Console.ReadLine());
+
+                        // ✔ FIXED — find by real Id
+                        Friend friendToDelete = friendsForDelete.FirstOrDefault(f => f.Id == deleteId);
+
+                        if (friendToDelete == null)
+                        {
+                            Console.WriteLine("Friend not found!");
+                            break;
+                        }
+
+                        friendService.Remove(deleteId);
+
+                        Console.WriteLine("=========================================================================================");
+
+                        Console.WriteLine("Friend deleted successfully!");
                         break;
 
-                    case "3":
+
+                    case "5":
                         Console.WriteLine("=========================================================================================");
                         Console.WriteLine("                       LEND A BOOK");
                         Console.WriteLine("=========================================================================================");
@@ -115,7 +220,7 @@ namespace PersonalLibraryManagementSystem.Menus
                         Console.WriteLine("\n Book lent successfully!");
                         break;
 
-                    case "4":
+                    case "6":
                         Console.WriteLine("=========================================================================================");
                         Console.WriteLine("                       RETURN BOOK");
                         Console.WriteLine("=========================================================================================");
@@ -137,7 +242,7 @@ namespace PersonalLibraryManagementSystem.Menus
                         Console.WriteLine("\n Book returned successfully!");
                         break;
 
-                    case "5":
+                    case "7":
                         Console.WriteLine("=========================================================================================");
                         Console.WriteLine("                  LENDING RECORDS");
                         Console.WriteLine("=========================================================================================");
@@ -146,7 +251,7 @@ namespace PersonalLibraryManagementSystem.Menus
 
                         break;
 
-                    case "6":
+                    case "8":
                         Console.WriteLine("=========================================================================================");
                         Console.WriteLine("               CURRENTLY LENT BOOKS");
                         Console.WriteLine("=========================================================================================");
@@ -155,7 +260,7 @@ namespace PersonalLibraryManagementSystem.Menus
 
                         break;
 
-                    case "7":
+                    case "9":
                         Console.WriteLine("=========================================================================================");
                         Console.WriteLine("                 OVERDUE BOOKS");
                         Console.WriteLine("=========================================================================================");

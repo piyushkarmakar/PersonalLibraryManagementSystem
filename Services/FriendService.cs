@@ -47,38 +47,52 @@ namespace PersonalLibraryManagementSystem.Services
                 friends.Add(friend);
             }
         }
-        // Update friend details
+        // ✅ UPDATE FRIEND BY ID
         public void Update(int id, Friend updatedFriend)
-            {
-                // Find the friend by matching email
-                Friend friend = null;
-                foreach (var f in friends)
-                {
-                    if (f.Email == updatedFriend.Email)
-                    {
-                        friend = f;
-                        break;
-                    }
-                }
+        {
+            Friend friend = friends.Find(f => f.Id == id);
 
-                // If found, update name and phone
-                if (friend != null)
+            if (friend != null)
+            {
+                if (useDatabase)
+                {
+
+                    dbService.UpdateFriendById(updatedFriend);
+
+                    friends = dbService.GetAllFriends(); // refresh
+                }
+                else
                 {
                     friend.Name = updatedFriend.Name;
+                    friend.Email = updatedFriend.Email;
                     friend.Phone = updatedFriend.Phone;
                 }
             }
+        }
 
-            // Remove friend by name or email
-            public void Remove(int id)
+        // ✅ DELETE FRIEND BY ID
+        public void Remove(int id)
+        {
+            Friend friend = friends.Find(f => f.Id == id);
+
+            if (friend != null)
             {
-                // Assuming id is index in the list
-                if (id >= 0 && id < friends.Count)
-                    friends.RemoveAt(id);
-            }
+                if (useDatabase)
+                {
+                    dbService.DeleteFriendById(id);
 
-            // Get friend by index
-            public Friend GetById(int id)
+                    friends = dbService.GetAllFriends();
+                }
+                else
+                {
+                    friends.Remove(friend);
+                }
+            }
+        }
+
+
+        // Get friend by index
+        public Friend GetById(int id)
             {
                 if (id >= 0 && id < friends.Count)
                 {
