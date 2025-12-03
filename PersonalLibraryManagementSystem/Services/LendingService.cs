@@ -38,6 +38,12 @@ namespace PersonalLibraryManagementSystem.Services
             this.lendingRecords = dbService.GetAllLendingRecords();
             this.useDatabase = true;
         }
+        // Helper: Get Book by Name
+        public Book GetBookByName(string name)
+        {
+            return libraryService.GetAllBooks()
+                                 .FirstOrDefault(b => b.Title.Equals(name, StringComparison.OrdinalIgnoreCase));
+        }
 
 
         // Lend a book to a friend
@@ -48,13 +54,13 @@ namespace PersonalLibraryManagementSystem.Services
 
             if (book == null || friend == null)
             {
-                Console.WriteLine("⚠ Book or Friend not found.");
+                Console.WriteLine(" Book or Friend not found.");
                 return false;
             }
 
             if (book.IsLent)
             {
-                Console.WriteLine("⚠ Book is already lent to someone else.");
+                Console.WriteLine(" Book is already lent to someone else.");
                 return false;
             }
 
@@ -81,7 +87,7 @@ namespace PersonalLibraryManagementSystem.Services
             book.IsLent = true;
             friend.BorrowBook(bookId);
 
-            Console.WriteLine("✅ Book lent successfully.");
+            Console.WriteLine(" Book lent successfully.");
             return true;
         
         }
@@ -94,7 +100,7 @@ namespace PersonalLibraryManagementSystem.Services
 
             if (book == null || friend == null)
             {
-                Console.WriteLine("⚠ Invalid book or friend name.");
+                Console.WriteLine(" Invalid book or friend name.");
                 return false;
             }
 
@@ -112,8 +118,13 @@ namespace PersonalLibraryManagementSystem.Services
 
             if (record == null)
             {
-                Console.WriteLine("⚠ No active lending record found for this book and friend.");
+                Console.WriteLine(" No active lending record found for this book and friend.");
                 return false;
+            }
+            if (record.DueDate < DateTime.Now)
+            {
+                int overdueDays = (DateTime.Now - record.DueDate).Days;
+                Console.WriteLine($" Note: This book is overdue by {overdueDays} day(s).");
             }
 
             if (useDatabase)
@@ -130,7 +141,7 @@ namespace PersonalLibraryManagementSystem.Services
             book.IsLent = false;
             friend.ReturnBook(bookId);
 
-            Console.WriteLine("✅ Book returned successfully.");
+            Console.WriteLine(" Book returned successfully.");
             return true;
 
         }

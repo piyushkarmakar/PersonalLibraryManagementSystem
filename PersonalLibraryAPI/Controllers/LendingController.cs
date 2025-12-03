@@ -1,288 +1,285 @@
-﻿//using Microsoft.AspNetCore.Http;
-//using Microsoft.AspNetCore.Mvc;
-//using Microsoft.Extensions.Logging;
-//using PersonalLibraryAPI.Services;
-//using PersonalLibraryManagementSystem.Models;
-//using PersonalLibraryManagementSystem.Services;
-//using System;
-//using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using PersonalLibraryManagementSystem.Models;
+using PersonalLibraryManagementSystem.Services;
+using PersonalLibraryAPI.Services;
+using System;
+using System.Collections.Generic;
 
-//namespace PersonalLibraryAPI.Controllers
-//{
-//    [ApiController]
-//    [Route("api")]
-//    public class LendingController : ControllerBase
-//    {
-//        private readonly IConfiguration _config;
-//        private readonly ILogger<LendingController> _logger;
-//        private readonly LendingManager _lendingManager;
+namespace PersonalLibraryAPI.Controllers
+{
+    [ApiController]
+    [Route("api")]
+    public class LendingController : ControllerBase
+    {
+        private readonly LendingManager _lendingManager;
+        private readonly ILogger<LendingController> _logger;
+        private readonly IConfiguration _config;
+        private string LendingFilePath => _config["FilePaths:LendingFile"];
 
-//        public LendingController(IConfiguration config, ILogger<LendingController> logger)
-//        {
-//            _config = config;
-//            _logger = logger;
-//            var libraryManager = new LibraryManager(config);
-//            var friendManager = new FriendManager(config);
+        public LendingController(
+            LendingManager lendingManager,
+            IConfiguration config,
+            ILogger<LendingController> logger)
+        {
+            _lendingManager = lendingManager;
+            _config = config;
+            _logger = logger;
+        }
 
-//            _lendingManager = new LendingManager(config, libraryManager, friendManager);
-//        }
+        // =====================================================================
+        //                        DATABASE MODE FUNCTIONS
+        // =====================================================================
 
-//        private string LendingFilePath => _config["FilePaths:LendingFile"];
+        [HttpGet("db/lending")]
+        public ActionResult<List<LendingRecord>> GetAllLendingDb()
+        {
+            try
+            {
+                var allRecords = _lendingManager.CreateDbService().GetAllRecords();
+                // OverdueDays is already a calculated property
+                return Ok(allRecords);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetAllLendingDb Error");
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
 
-//        // --------------------------------------------------------------------
-//        //                           DATABASE APIs
-//        // --------------------------------------------------------------------
+        [HttpGet("db/lending/lent")]
+        public ActionResult<List<LendingRecord>> GetAllLentBooksDb()
+        {
+            try
+            {
+                var lentBooks = _lendingManager.CreateDbService().GetAllLentBooks();
+                return Ok(lentBooks);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetAllLentBooksDb Error");
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
 
-//        [HttpGet("db/lending")]
-//        [ProducesResponseType(StatusCodes.Status200OK)]
-//        public ActionResult<List<LendingRecord>> GetAllFromDb()
-//        {
-//            try
-//            {
-//                _logger.LogInformation("Fetching all lending records from DB...");
-//                var lendingService = _lendingManager.CreateDbService();
-//                var records = lendingService.GetAllRecords();
-//                return Ok(records);
-//            }
-//            catch (Exception ex)
-//            {
-//                _logger.LogError(ex, "Error fetching lending records from DB");
-//                return StatusCode(500, "Internal server error.");
-//            }
-//        }
+        [HttpGet("db/lending/overdue")]
+        public ActionResult<List<LendingRecord>> GetOverdueDb()
+        {
+            try
+            {
+                var overdue = _lendingManager.CreateDbService().GetOverdueBooks();
+                return Ok(overdue);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetOverdueDb Error");
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
 
-//        [HttpGet("db/lending/{id}")]
-//        [ProducesResponseType(StatusCodes.Status200OK)]
-//        [ProducesResponseType(StatusCodes.Status404NotFound)]
-//        public ActionResult<LendingRecord> GetByIdFromDb(int id)
-//        {
-//            try
-//            {
-//                var lendingService = _lendingManager.CreateDbService();
-//                var record = lendingService.GetRecordById(id);
+        // =====================================================================
+        //                             LEND BOOK (POST)
+        // =====================================================================
 
-//                if (record == null)
-//                    return NotFound($"Lending record with ID {id} not found.");
+        public class LendRequest
+        {
+            public int BookId { get; set; }
+            public string BookName { get; set; }   
+            public string FriendName { get; set; }
+            public DateTime DueDate { get; set; }
+        }
 
-//                return Ok(record);
-//            }
-//            catch (Exception ex)
-//            {
-//                _logger.LogError(ex, "Error fetching lending record from DB");
-//                return StatusCode(500, "Internal server error.");
-//            }
-//        }
+        [HttpPost("db/lending/lend")]
+        public ActionResult LendBookDb([FromBody] LendRequest req)
+        {
+            try
+            {
+                if (req == null) return BadRequest("Request cannot be null.");
 
-//        [HttpPost("db/lending")]
-//        [ProducesResponseType(StatusCodes.Status201Created)]
-//        public ActionResult AddToDb([FromBody] LendingRecord record)
-//        {
-//            try
-//            {
-//                if (record == null)
-//                    return BadRequest("Lending record cannot be null.");
+                var service = _lendingManager.CreateDbService();
 
-//                var lendingService = _lendingManager.CreateDbService();
-//                lendingService.AddRecord(record);
+                // If BookId not provided, convert BookName → BookId
+                if (req.BookId == 0 && !string.IsNullOrEmpty(req.BookName))
+                {
+                    var book = service.GetBookByName(req.BookName);
+                    if (book == null)
+                        return NotFound($"Book '{req.BookName}' not found.");
 
-//                return CreatedAtAction(nameof(GetByIdFromDb), new { id = record.Id }, record);
-//            }
-//            catch (Exception ex)
-//            {
-//                _logger.LogError(ex, "Error adding lending record to DB");
-//                return StatusCode(500, "Internal server error.");
-//            }
-//        }
+                    req.BookId = book.Id;
+                }
 
-//        [HttpPut("db/lending/{id}")]
-//        [ProducesResponseType(StatusCodes.Status200OK)]
-//        public ActionResult UpdateDb(int id, [FromBody] LendingRecord updated)
-//        {
-//            try
-//            {
-//                if (updated == null)
-//                    return BadRequest("Updated record cannot be null.");
+                if (req.BookId == 0)
+                    return BadRequest("BookId or BookName must be provided.");
 
-//                var lendingService = _lendingManager.CreateDbService();
-//                updated.Id = id;
-//                lendingService.UpdateRecord(updated);
+                bool result = service.LendBook(req.BookId, req.FriendName, req.DueDate);
 
-//                return Ok("Lending record updated.");
-//            }
-//            catch (Exception ex)
-//            {
-//                _logger.LogError(ex, "Error updating lending record in DB");
-//                return StatusCode(500, "Internal server error.");
-//            }
-//        }
+                if (!result)
+                    return BadRequest("Failed to lend book. Check book or friend.");
 
-//        [HttpPatch("db/lending/{id}")]
-//        [ProducesResponseType(StatusCodes.Status200OK)]
-//        public ActionResult PatchDb(int id, [FromBody] LendingRecord patch)
-//        {
-//            try
-//            {
-//                var lendingService = _lendingManager.CreateDbService();
-//                var record = lendingService.GetRecordById(id);
+                return Ok("Book lent successfully.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "LendBookDb Error");
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
 
-//                if (record == null)
-//                    return NotFound($"Lending record with ID {id} not found.");
+        // =====================================================================
+        //                           RETURN BOOK (PATCH)
+        // =====================================================================
 
-//                // Partial update
-//                if (patch.BookId != 0) record.BookId = patch.BookId;
-//                if (patch.FriendId != 0) record.FriendId = patch.FriendId;
-//                if (patch.DateLent != DateTime.MinValue) record.DateLent = patch.DateLent;
-//                if (patch.DateReturned != DateTime.MinValue) record.DateReturned = patch.DateReturned;
+        public class ReturnRequest
+        {
+            public int BookId { get; set; }
+            public string BookName { get; set; }  
+            public string FriendName { get; set; }
+        }
 
-//                lendingService.UpdateRecord(record);
-//                return Ok("Lending record patched.");
-//            }
-//            catch (Exception ex)
-//            {
-//                _logger.LogError(ex, "Error patching lending record in DB");
-//                return StatusCode(500, "Internal server error.");
-//            }
-//        }
+        [HttpPatch("db/lending/return")]
+        public ActionResult ReturnBookDb([FromBody] ReturnRequest req)
+        {
+            try
+            {
+                if (req == null) return BadRequest("Request cannot be null.");
 
-//        [HttpDelete("db/lending/{id}")]
-//        [ProducesResponseType(StatusCodes.Status200OK)]
-//        public ActionResult DeleteDb(int id)
-//        {
-//            try
-//            {
-//                var lendingService = _lendingManager.CreateDbService();
-//                lendingService.DeleteRecord(id);
-//                return Ok($"Lending record with ID {id} deleted.");
-//            }
-//            catch (Exception ex)
-//            {
-//                _logger.LogError(ex, "Error deleting lending record from DB");
-//                return StatusCode(500, "Internal server error.");
-//            }
-//        }
+                var service = _lendingManager.CreateDbService();
 
-//        // --------------------------------------------------------------------
-//        //                               FILE APIs
-//        // --------------------------------------------------------------------
+                if (req.BookId == 0 && !string.IsNullOrEmpty(req.BookName))
+                {
+                    var book = service.GetBookByName(req.BookName);
+                    if (book == null)
+                        return NotFound($"Book '{req.BookName}' not found.");
 
-//        [HttpGet("file/lending")]
-//        [ProducesResponseType(StatusCodes.Status200OK)]
-//        public ActionResult<List<LendingRecord>> GetAllFromFile()
-//        {
-//            try
-//            {
-//                var lendingService = _lendingManager.CreateFileService();
-//                var records = lendingService.GetAllRecords();
-//                return Ok(records);
-//            }
-//            catch (Exception ex)
-//            {
-//                _logger.LogError(ex, "Error fetching lending records from file");
-//                return StatusCode(500, "Internal server error.");
-//            }
-//        }
+                    req.BookId = book.Id;
+                }
 
-//        [HttpGet("file/lending/{id}")]
-//        [ProducesResponseType(StatusCodes.Status200OK)]
-//        [ProducesResponseType(StatusCodes.Status404NotFound)]
-//        public ActionResult<LendingRecord> GetByIdFromFile(int id)
-//        {
-//            try
-//            {
-//                var lendingService = _lendingManager.CreateFileService();
-//                var record = lendingService.GetRecordById(id);
+                if (req.BookId == 0)
+                    return BadRequest("BookId or BookName must be provided.");
 
-//                if (record == null)
-//                    return NotFound($"Lending record with ID {id} not found.");
+                bool result = service.ReturnBook(req.BookId, req.FriendName);
 
-//                return Ok(record);
-//            }
-//            catch (Exception ex)
-//            {
-//                _logger.LogError(ex, "Error fetching lending record from file");
-//                return StatusCode(500, "Internal server error.");
-//            }
-//        }
+                if (!result)
+                    return BadRequest("Return failed. Lending record not found.");
 
-//        [HttpPost("file/lending")]
-//        [ProducesResponseType(StatusCodes.Status201Created)]
-//        public ActionResult AddToFile([FromBody] LendingRecord record)
-//        {
-//            try
-//            {
-//                if (record == null)
-//                    return BadRequest("Lending record cannot be null.");
+                return Ok("Book returned successfully.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "ReturnBookDb Error");
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
 
-//                var lendingService = _lendingManager.CreateFileService();
-//                lendingService.AddRecord(record);
+        // =====================================================================
+        //                        FILE MODE FUNCTIONS
+        // =====================================================================
 
-//                return CreatedAtAction(nameof(GetByIdFromFile), new { id = record.Id }, record);
-//            }
-//            catch (Exception ex)
-//            {
-//                _logger.LogError(ex, "Error adding lending record to file");
-//                return StatusCode(500, "Internal server error.");
-//            }
-//        }
+        [HttpGet("file/lending")]
+        public ActionResult<List<LendingRecord>> GetAllLendingFile()
+        {
+            try
+            {
+                var allRecords = _lendingManager.CreateFileService().GetAllRecords();
+                return Ok(allRecords);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetAllLendingFile Error");
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
 
-//        [HttpPut("file/lending/{id}")]
-//        public ActionResult UpdateFile(int id, [FromBody] LendingRecord updated)
-//        {
-//            try
-//            {
-//                var lendingService = _lendingManager.CreateFileService();
-//                updated.Id = id;
-//                lendingService.UpdateRecord(updated);
+        [HttpGet("file/lending/lent")]
+        public ActionResult<List<LendingRecord>> GetAllLentFile()
+        {
+            try
+            {
+                var lentBooks = _lendingManager.CreateFileService().GetAllLentBooks();
+                return Ok(lentBooks);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetAllLentFile Error");
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
 
-//                return Ok("Lending record updated in file.");
-//            }
-//            catch (Exception ex)
-//            {
-//                _logger.LogError(ex, "Error updating lending record in file");
-//                return StatusCode(500, "Internal server error.");
-//            }
-//        }
+        [HttpGet("file/lending/overdue")]
+        public ActionResult<List<LendingRecord>> GetOverdueFile()
+        {
+            try
+            {
+                var overdueBooks = _lendingManager.CreateFileService().GetOverdueBooks();
+                return Ok(overdueBooks);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetOverdueFile Error");
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
 
-//        [HttpPatch("file/lending/{id}")]
-//        public ActionResult PatchFile(int id, [FromBody] LendingRecord patch)
-//        {
-//            try
-//            {
-//                var lendingService = _lendingManager.CreateFileService();
-//                var record = lendingService.GetRecordById(id);
+        [HttpPost("file/lending/lend")]
+        public ActionResult LendBookFile([FromBody] LendRequest req)
+        {
+            try
+            {
+                var service = _lendingManager.CreateFileService();
 
-//                if (record == null)
-//                    return NotFound($"Lending record with ID {id} not found.");
+                // BookName → BookId support
+                if (req.BookId == 0 && !string.IsNullOrEmpty(req.BookName))
+                {
+                    var book = service.GetBookByName(req.BookName);
+                    if (book == null) return NotFound($"Book '{req.BookName}' not found.");
+                    req.BookId = book.Id;
+                }
 
-//                if (patch.BookId != 0) record.BookId = patch.BookId;
-//                if (patch.FriendId != 0) record.FriendId = patch.FriendId;
-//                if (patch.DateLent != DateTime.MinValue) record.DateLent = patch.DateLent;
-//                if (patch.DateReturned != DateTime.MinValue) record.DateReturned = patch.DateReturned;
+                if (req.BookId == 0) return BadRequest("BookId or BookName must be provided.");
 
-//                lendingService.UpdateRecord(record);
-//                return Ok("Lending record patched in file.");
-//            }
-//            catch (Exception ex)
-//            {
-//                _logger.LogError(ex, "Error patching lending record in file");
-//                return StatusCode(500, "Internal server error.");
-//            }
-//        }
+                bool result = service.LendBook(req.BookId, req.FriendName, req.DueDate);
+                if (!result) return BadRequest("Lend failed.");
 
-//        [HttpDelete("file/lending/{id}")]
-//        public ActionResult DeleteFile(int id)
-//        {
-//            try
-//            {
-//                var lendingService = _lendingManager.CreateFileService();
-//                lendingService.DeleteRecord(id);
-//                return Ok($"Lending record with ID {id} deleted from file.");
-//            }
-//            catch (Exception ex)
-//            {
-//                _logger.LogError(ex, "Error deleting lending record from file");
-//                return StatusCode(500, "Internal server error.");
-//            }
-//        }
-//    }
-//}
+                // ✅ Save immediately
+                FileService.SaveLendingRecords(service.GetAllRecords(), LendingFilePath);
+
+                return Ok("Book lent successfully (file mode).");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "LendBookFile Error");
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
+
+        [HttpPatch("file/lending/return")]
+        public ActionResult ReturnBookFile([FromBody] ReturnRequest req)
+        {
+            try
+            {
+                var service = _lendingManager.CreateFileService();
+
+                if (req.BookId == 0 && !string.IsNullOrEmpty(req.BookName))
+                {
+                    var book = service.GetBookByName(req.BookName);
+                    if (book == null) return NotFound($"Book '{req.BookName}' not found.");
+                    req.BookId = book.Id;
+                }
+
+                if (req.BookId == 0) return BadRequest("BookId or BookName must be provided.");
+
+                bool result = service.ReturnBook(req.BookId, req.FriendName);
+                if (!result) return BadRequest("Return failed.");
+
+                FileService.SaveLendingRecords(service.GetAllRecords(), LendingFilePath);
+
+                return Ok("Book returned successfully (file mode).");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "ReturnBookFile Error");
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
+    }
+}

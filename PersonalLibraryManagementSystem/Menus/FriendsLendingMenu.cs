@@ -8,9 +8,9 @@ namespace PersonalLibraryManagementSystem.Menus
     {
         private static void PrintLendingRecords(List<LendingRecord> records, LibraryService libraryService)
         {
-            Console.WriteLine("{0,-5} {1,-25} {2,-15} {3,-15} {4,-15} {5,-15}",
-                "ID", "Book Name", "Friend Name", "Lend Date", "Due Date", "Return Date");
-            Console.WriteLine("================================================================================");
+            Console.WriteLine("{0,-5} {1,-25} {2,-15} {3,-15} {4,-15} {5,-15} {6,-20}",
+                "ID", "Book Name", "Friend Name", "Lend Date", "Due Date", "Return Date", "Overdue days");
+            Console.WriteLine("========================================================================================================================");
 
             foreach (LendingRecord record in records)
             {
@@ -19,16 +19,20 @@ namespace PersonalLibraryManagementSystem.Menus
                     ? record.BookName
                     : (book != null ? book.Title : "Unknown");
                 string returnDate = record.ReturnDate.HasValue ? record.ReturnDate.Value.ToString("yyyy-MM-dd") : "Pending";
-
-                Console.WriteLine("{0,-5} {1,-25} {2,-15} {3,-15} {4,-15} {5,-15}",
+                string overdueInfo = "";
+                if (!record.ReturnDate.HasValue && DateTime.Now > record.DueDate)
+                {
+                    overdueInfo = $" Overdue by {(DateTime.Now - record.DueDate).Days} days";
+                }
+                Console.WriteLine("{0,-5} {1,-25} {2,-15} {3,-15} {4,-15} {5,-15} {6,-20}",
                     record.BookId,
                     bookTitle,
                     record.FriendName,
                     record.LendDate.ToString("yyyy-MM-dd"),
                     record.DueDate.ToString("yyyy-MM-dd"),
-                    returnDate);
+                    returnDate, overdueInfo);
             }
-            Console.WriteLine("================================================================================");
+            Console.WriteLine("========================================================================================================================");
         }
         public static void Show(FriendService friendService, LendingService lendingService, LibraryService libraryService)
         {
@@ -71,7 +75,7 @@ namespace PersonalLibraryManagementSystem.Menus
                             friend.Phone = phone;
 
                             friendService.Add(friend);
-                            Console.WriteLine("=========================================================================================");
+                            Console.WriteLine("======================================================================");
 
                             Console.WriteLine("\n Friend added successfully!");
 
@@ -96,12 +100,12 @@ namespace PersonalLibraryManagementSystem.Menus
                             }
                         }
 
-                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("======================================================================");
                         break;
                     case "3":
-                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("======================================================================");
                         Console.WriteLine("                     UPDATE FRIEND");
-                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("======================================================================");
                         var friendsForUpdate = friendService.GetAllFriends().ToList();
                         if (friendsForUpdate.Count == 0)
                         {
@@ -194,14 +198,14 @@ namespace PersonalLibraryManagementSystem.Menus
 
 
                     case "5":
-                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("========================================================================================================================");
                         Console.WriteLine("                       LEND A BOOK");
-                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("========================================================================================================================");
 
-                        Console.WriteLine("\n============================================================");
+                        Console.WriteLine("========================================================================================================================");
                         foreach (var book in libraryService.GetAllBooks())
                             Console.Write($"{book.Id} : {book.Title}\n");
-                        Console.WriteLine("==============================================================");
+                        Console.WriteLine("========================================================================================================================");
 
                         Console.Write("Book ID: ");
                         int bookId = int.Parse(Console.ReadLine() ?? "0");
@@ -215,20 +219,20 @@ namespace PersonalLibraryManagementSystem.Menus
                         DateTime dueDate = DateTime.Parse(Console.ReadLine() ?? DateTime.Now.ToString("yyyy-MM-dd"));
 
                         lendingService.LendBook(bookId, friendName, dueDate);
-                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("========================================================================================================================");
 
                         Console.WriteLine("\n Book lent successfully!");
                         break;
 
                     case "6":
-                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("========================================================================================================================");
                         Console.WriteLine("                       RETURN BOOK");
-                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("========================================================================================================================");
 
-                        Console.WriteLine("\n==============================================================");
+                        Console.WriteLine("\n======================================================================================================================");
                         foreach (var book in libraryService.GetAllBooks())
                             Console.Write($"{book.Id} : {book.Title}\n");
-                        Console.WriteLine("================================================================");
+                        Console.WriteLine("========================================================================================================================");
 
                         Console.Write("Enter Book ID to return: ");
                         int returnBookId = int.Parse(Console.ReadLine() ?? "0");
@@ -237,33 +241,33 @@ namespace PersonalLibraryManagementSystem.Menus
                         string returnFriend = Console.ReadLine();
 
                         lendingService.ReturnBook(returnBookId, returnFriend);
-                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("========================================================================================================================");
 
                         Console.WriteLine("\n Book returned successfully!");
                         break;
 
                     case "7":
-                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("========================================================================================================================");
                         Console.WriteLine("                  LENDING RECORDS");
-                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("========================================================================================================================");
                         PrintLendingRecords(lendingService.GetAllRecords(), libraryService);
-                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("========================================================================================================================");
 
                         break;
 
                     case "8":
-                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("========================================================================================================================");
                         Console.WriteLine("               CURRENTLY LENT BOOKS");
-                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("========================================================================================================================");
                         PrintLendingRecords(lendingService.GetAllLentBooks(), libraryService);
-                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("========================================================================================================================");
 
                         break;
 
                     case "9":
-                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("========================================================================================================================");
                         Console.WriteLine("                 OVERDUE BOOKS");
-                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("========================================================================================================================");
                         List<LendingRecord> overdue = lendingService.GetOverdueBooks();
                         if (overdue == null || overdue.Count == 0)
                         {
@@ -273,7 +277,7 @@ namespace PersonalLibraryManagementSystem.Menus
                         {
                             PrintLendingRecords(overdue, libraryService);
                         }
-                        Console.WriteLine("=========================================================================================");
+                        Console.WriteLine("========================================================================================================================");
 
                         break;
 

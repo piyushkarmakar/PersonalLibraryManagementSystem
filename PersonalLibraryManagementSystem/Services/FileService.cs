@@ -144,7 +144,7 @@ namespace PersonalLibraryManagementSystem.Services
                     FriendName = parts[2],
                     LendDate = DateTime.Parse(parts[3]),
                     DueDate = DateTime.Parse(parts[4]),
-                    ReturnDate = string.IsNullOrEmpty(parts[5]) ? null : DateTime.Parse(parts[4])
+                    ReturnDate = string.IsNullOrEmpty(parts[5]) ? null : DateTime.Parse(parts[5])
                 };
                 records.Add(record);
             }

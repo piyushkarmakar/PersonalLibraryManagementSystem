@@ -17,6 +17,18 @@ namespace PersonalLibraryManagementSystem.Models
         public DateTime DueDate { get; set; }
         public DateTime? ReturnDate { get; set; }
 
+        // Add OverdueDays
+        public int? OverdueDays
+        {
+            get
+            {
+                if (!ReturnDate.HasValue && DateTime.Now > DueDate)
+                {
+                    return (DateTime.Now - DueDate).Days;
+                }
+                return null;
+            }
+        }
 
         public void MarkAsReturned()
         {
