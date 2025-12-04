@@ -186,7 +186,7 @@ namespace PersonalLibraryManagementSystem.Services
                 while (reader.Read())
                 {
                     Friend friend = new Friend();
-                    friend.Id = Convert.ToInt32(reader["Id"]);  
+                    friend.Id = Convert.ToInt32(reader["Id"]);
                     friend.Name = reader["Name"].ToString();
                     friend.Email = reader["Email"].ToString();
                     friend.Phone = reader["Phone"].ToString();
@@ -262,9 +262,124 @@ namespace PersonalLibraryManagementSystem.Services
             }
         }
 
+        public List<Book> GetReadingProgress()
+        {
+            var books = new List<Book>();
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string query = "SELECT Id, Title, Status, Rating, Review FROM Books";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            books.Add(new Book
+                            {
+                                Id = Convert.ToInt32(reader["Id"]),
+                                Title = reader["Title"].ToString(),
+                                Status = Enum.TryParse(reader["Status"].ToString(), out BookStatus st) ? st : BookStatus.ToRead,
+                                Rating = reader["Rating"] != DBNull.Value ? Convert.ToInt32(reader["Rating"]) : 0,
+                                Review = reader["Review"]?.ToString()
+                            });
+                        }
+                    }
+                }
+            }
+            return books;
+        }
+
+        public bool StartReading(int bookId)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string query = "UPDATE Books SET Status=@Status, DateStarted=@DateStarted WHERE Id=@Id";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Status", BookStatus.CurrentlyReading.ToString());
+                    cmd.Parameters.AddWithValue("@DateStarted", DateTime.Now);
+                    cmd.Parameters.AddWithValue("@Id", bookId);
+
+                    int rows = cmd.ExecuteNonQuery();
+                    return rows > 0; // true if a row was updated
+                }
+            }
+        }
+
+        public bool FinishReading(int bookId)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string query = "UPDATE Books SET Status=@Status, DateFinished=@DateFinished WHERE Id=@Id";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Status", BookStatus.Finished.ToString());
+                    cmd.Parameters.AddWithValue("@DateFinished", DateTime.Now);
+                    cmd.Parameters.AddWithValue("@Id", bookId);
+
+                    int rows = cmd.ExecuteNonQuery();
+                    return rows > 0;
+                }
+            }
+        }
+
+        public bool AddRatingReview(int bookId, int rating, string review)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string query = "UPDATE Books SET Rating=@Rating, Review=@Review WHERE Id=@Id";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Rating", rating);
+                    cmd.Parameters.AddWithValue("@Review", review ?? string.Empty);
+                    cmd.Parameters.AddWithValue("@Id", bookId);
+
+                    int rows = cmd.ExecuteNonQuery();
+                    return rows > 0;
+                }
+            }
+        }
+        public Book GetBookById(int bookId)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string query = "SELECT * FROM Books WHERE Id=@Id";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Id", bookId);
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new Book
+                            {
+                                Id = Convert.ToInt32(reader["Id"]),
+                                Title = reader["Title"].ToString(),
+                                Author = reader["Author"].ToString(),
+                                Genre = Enum.TryParse(reader["Genre"].ToString(), out Genre g) ? g : Genre.Other,
+                                Status = Enum.TryParse(reader["Status"].ToString(), out BookStatus st) ? st : BookStatus.ToRead,
+                                Rating = reader["Rating"] != DBNull.Value ? Convert.ToInt32(reader["Rating"]) : 0,
+                                Review = reader["Review"]?.ToString(),
+                                DateAdded = Convert.ToDateTime(reader["DateAdded"]),
+                                DateStarted = reader["DateStarted"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["DateStarted"]),
+                                DateFinished = reader["DateFinished"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["DateFinished"]),
+                                IsLent = Convert.ToBoolean(reader["IsLent"])
+                            };
+                        }
+                        return null;
+                    }
+                }
+            }
+        }
 
 
 
 
     }
 }
+

@@ -17,6 +17,7 @@ namespace PersonalLibraryManagementSystem.Menus
                 Console.WriteLine("2. Finish Reading a Book");
                 Console.WriteLine("3. Add Rating & Review");
                 Console.WriteLine("4. View Rating and Review of Book");
+                Console.WriteLine("5. View Reading Progress of All Books");
                 Console.WriteLine("0. Back to Main Menu");
                 Console.Write("\nEnter your choice: ");
                 string choice = Console.ReadLine();
@@ -84,6 +85,14 @@ namespace PersonalLibraryManagementSystem.Menus
                             Console.WriteLine("=========================================================================================");
                         }
                         break;
+                    case "5":
+                        Console.WriteLine("================================================================================================================");
+                        Console.WriteLine("                       VIEW BOOKSTATUS ");
+                        Console.WriteLine("================================================================================================================");
+                        ViewAllBooksProgress(libraryService);
+                        Console.WriteLine("================================================================================================================");
+                        
+                        break;
 
                     case "0":
                         return;
@@ -97,5 +106,28 @@ namespace PersonalLibraryManagementSystem.Menus
                 Console.ReadKey();
             }
         }
+        private static void ViewAllBooksProgress(LibraryService libraryService)
+        {
+            var books = libraryService.GetAllBooks();
+
+            Console.WriteLine("================================================================================================================");
+            Console.WriteLine("{0,-5} {1,-40} {2,-15}",
+                "ID", "Title", "Status");
+            Console.WriteLine("================================================================================================================");
+
+            foreach (var book in books)
+            {
+                string ratingText = book.Rating > 0 ? book.Rating.ToString() : "Not Rated";
+                string reviewText = string.IsNullOrEmpty(book.Review) ? "No Review Added" : book.Review;
+
+                Console.WriteLine("{0,-5} {1,-40} {2,-15}",
+                    book.Id,
+                    book.Title.Length > 40 ? book.Title.Substring(0, 37) + "..." : book.Title,
+                    book.Status);
+            }
+
+            Console.WriteLine("================================================================================================================");
+        }
+
     }
 }

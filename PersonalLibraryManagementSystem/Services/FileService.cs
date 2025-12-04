@@ -166,6 +166,51 @@ namespace PersonalLibraryManagementSystem.Services
             }
             File.WriteAllLines(path, lines);
         }
+        public static bool UpdateBookStatusFile(string path, int bookId, BookStatus status, bool setDateFinished = false)
+        {
+            var books = LoadBooks(path);
+            var book = books.Find(b => b.Id == bookId);
+            if (book == null) return false;
+
+            book.Status = status;
+            if (status == BookStatus.CurrentlyReading)
+                book.DateStarted = DateTime.Now;
+            if (setDateFinished)
+                book.DateFinished = DateTime.Now;
+
+            SaveBooks(books, path);
+            return true;
+        }
+
+        public static bool UpdateRatingReviewFile(string path, int bookId, int rating, string review)
+        {
+            var books = LoadBooks(path);
+            var book = books.Find(b => b.Id == bookId);
+            if (book == null) return false;
+
+            book.Rating = rating;
+            book.Review = review ?? string.Empty;
+            SaveBooks(books, path);
+            return true;
+        }
+
+        public static List<Book> GetReadingProgressFile(string path)
+        {
+            var books = LoadBooks(path);
+            var progress = new List<Book>();
+            foreach (var b in books)
+            {
+                progress.Add(new Book
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    Status = b.Status,
+                    Rating = b.Rating,
+                    Review = b.Review
+                });
+            }
+            return progress;
+        }
 
 
 

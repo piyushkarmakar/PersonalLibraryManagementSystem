@@ -4,5 +4,5 @@ ID|BookName|Author|Genre|Status|Rating|DateAdded|DateStarted|DateFinished|Review
 1|Ramayan|Balmiki|Mythology|Finished|4|10/23/2025 10:21:27 AM|10/23/2025 11:03:39 AM|10/30/2025 7:59:52 AM|One of the Best Mythological book i have ever read|True
 2|MahaBharat|Ved Vyas|Mythology|CurrentlyReading|5|10/23/2025 10:38:48 AM|10/30/2025 10:48:56 AM||If you want to know proper politics please watch Mahabharat|True
 3|Experiment in Plant Hybridisation|Sir John Gregor Mendel|Biography|CurrentlyReading|3|10/23/2025 11:01:26 AM|||Sir John Gregor Mendel is done best experiment using the pea tree to prove inheritance theory |False
-4|The Hidden Tressure|Akshat Gupta|Mythology|ToRead|4|10/30/2025 7:53:53 AM|10/30/2025 7:57:52 AM||All the hidden secreats on hindus written here|False
+4|The Hidden Tressure|Akshat Gupta|Mythology|Finished|4|10/30/2025 7:53:53 AM|12/4/2025 2:04:55 PM|12/4/2025 2:05:29 PM|All the hidden secreats on hindus written here|False
 5|Origin of Species|Charles Darwin|Mystery|Finished|4|11/8/2025 9:51:07 PM|11/8/2025 10:58:14 PM|11/8/2025 11:00:12 PM|This must read by all biology students|False
