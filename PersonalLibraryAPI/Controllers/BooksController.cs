@@ -70,7 +70,7 @@ namespace PersonalLibraryAPI.Controllers
                     _logger.LogWarning("Book with ID {id} not found in DB", id);
                     return NotFound("Book not found.");
                 }
-
+                _logger.LogInformation($"Book with ID {id} found in DB");
                 return Ok(book);
             }
             catch (Exception ex)
@@ -100,6 +100,7 @@ namespace PersonalLibraryAPI.Controllers
                 // return Ok("Book added to database.");
 
                 _dbService.AddBook(book);
+                _logger.LogInformation("Book Added Succesfully in DB");
 
                 // CreatedAtAction is better than returning a plain OK string.
                 return CreatedAtAction(nameof(GetBookFromDb), new { id = book.Id }, book);
@@ -211,6 +212,7 @@ namespace PersonalLibraryAPI.Controllers
             try
             {
                 _dbService.DeleteBook(id);
+                _logger.LogInformation($"Book with ID {id} deleted from DB");
                 return Ok($"Book with ID {id} deleted.");
             }
             catch (Exception ex)
@@ -236,6 +238,7 @@ namespace PersonalLibraryAPI.Controllers
             try
             {
                 var books = FileService.LoadBooks(BooksFilePath);
+                _logger.LogInformation("Fetching all books from BookFile...");
                 return Ok(books);
             }
             catch (Exception ex)
@@ -260,6 +263,7 @@ namespace PersonalLibraryAPI.Controllers
                 var book = books.Find(b => b.Id == id);
                 if (book == null)
                     return NotFound("Book not found.");
+                _logger.LogInformation($"Book with ID {id} found in BookFile");
 
                 return Ok(book);
             }
@@ -288,6 +292,7 @@ namespace PersonalLibraryAPI.Controllers
                 book.DateAdded = DateTime.Now;
 
                 books.Add(book);
+                _logger.LogInformation($"Book having Id {book.Id} Added Successfully");
                 FileService.SaveBooks(books, BooksFilePath);
 
                 return CreatedAtAction(nameof(GetBookFromFile), new { id = book.Id }, book);
@@ -323,6 +328,7 @@ namespace PersonalLibraryAPI.Controllers
                 book.Status = updated.Status;
                 book.Rating = updated.Rating;
                 book.Review = updated.Review;
+                _logger.LogInformation($"Book having Id {book.Id} Updated Successfully");
 
                 FileService.SaveBooks(books, BooksFilePath);
 
@@ -401,6 +407,8 @@ namespace PersonalLibraryAPI.Controllers
                 var books = FileService.LoadBooks(BooksFilePath);
 
                 books.RemoveAll(b => b.Id == id);
+                _logger.LogInformation($"Book having Id {id} Deleted Successfully");
+
                 FileService.SaveBooks(books, BooksFilePath);
 
 

@@ -37,6 +37,8 @@ namespace PersonalLibraryAPI.Controllers
             try
             {
                 var allRecords = _lendingManager.CreateDbService().GetAllRecords();
+                _logger.LogInformation($"Fetchhing All lendingRecord from DataBase...");
+
                 // OverdueDays is already a calculated property
                 return Ok(allRecords);
             }
@@ -53,6 +55,7 @@ namespace PersonalLibraryAPI.Controllers
             try
             {
                 var lentBooks = _lendingManager.CreateDbService().GetAllLentBooks();
+                _logger.LogInformation($"Fetchhing All lentedRecord from DataBase...");
                 return Ok(lentBooks);
             }
             catch (Exception ex)
@@ -68,6 +71,8 @@ namespace PersonalLibraryAPI.Controllers
             try
             {
                 var overdue = _lendingManager.CreateDbService().GetOverdueBooks();
+                _logger.LogInformation($"Fetchhing All OverdueRecord from DataBase...");
+
                 return Ok(overdue);
             }
             catch (Exception ex)
@@ -115,6 +120,7 @@ namespace PersonalLibraryAPI.Controllers
 
                 if (!result)
                     return BadRequest("Failed to lend book. Check book or friend.");
+                _logger.LogInformation($"Book Lent Successfully with BookId :{req.BookId} in DataBase...");
 
                 return Ok("Book lent successfully.");
             }
@@ -161,6 +167,7 @@ namespace PersonalLibraryAPI.Controllers
 
                 if (!result)
                     return BadRequest("Return failed. Lending record not found.");
+                _logger.LogInformation($"Book Reyurned Successfully with BookId:{req.BookId} in DataBase...");
 
                 return Ok("Book returned successfully.");
             }
@@ -181,6 +188,8 @@ namespace PersonalLibraryAPI.Controllers
             try
             {
                 var allRecords = _lendingManager.CreateFileService().GetAllRecords();
+                _logger.LogInformation($"Fetchhing All lendingRecord from LendingFile...");
+
                 return Ok(allRecords);
             }
             catch (Exception ex)
@@ -196,6 +205,8 @@ namespace PersonalLibraryAPI.Controllers
             try
             {
                 var lentBooks = _lendingManager.CreateFileService().GetAllLentBooks();
+                _logger.LogInformation($"Fetchhing All lentedRecord from LendingFile...");
+
                 return Ok(lentBooks);
             }
             catch (Exception ex)
@@ -211,6 +222,8 @@ namespace PersonalLibraryAPI.Controllers
             try
             {
                 var overdueBooks = _lendingManager.CreateFileService().GetOverdueBooks();
+                _logger.LogInformation($"Fetchhing All OverDueRecord from LendingFile...");
+
                 return Ok(overdueBooks);
             }
             catch (Exception ex)
@@ -242,6 +255,7 @@ namespace PersonalLibraryAPI.Controllers
 
                 // ✅ Save immediately
                 FileService.SaveLendingRecords(service.GetAllRecords(), LendingFilePath);
+                _logger.LogInformation($"Book Lent Successfully with BookId :{req.BookId} in LendingFile...");
 
                 return Ok("Book lent successfully (file mode).");
             }
@@ -272,6 +286,7 @@ namespace PersonalLibraryAPI.Controllers
                 if (!result) return BadRequest("Return failed.");
 
                 FileService.SaveLendingRecords(service.GetAllRecords(), LendingFilePath);
+                _logger.LogInformation($"Book Returned Successfully with BookId :{req.BookId} in LendingFile...");
 
                 return Ok("Book returned successfully (file mode).");
             }

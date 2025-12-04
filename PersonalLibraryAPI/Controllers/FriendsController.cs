@@ -59,6 +59,7 @@ namespace PersonalLibraryAPI.Controllers
                     _logger.LogWarning("Friend with Name {name} not found in DB", name);
                     return NotFound("Friend not found.");
                 }
+                _logger.LogInformation($"Friends with Name : {name} found in DB");
 
                 return Ok(friend);
             }
@@ -78,7 +79,7 @@ namespace PersonalLibraryAPI.Controllers
             {
                 if (friend == null)
                     return BadRequest("Friend cannot be null.");
-
+                _logger.LogInformation($"Friend Added Successfully In DB");
                 _dbService.AddFriend(friend);
                 return CreatedAtAction(nameof(GetFriendFromDb), new { name = friend.Name }, friend);
             }
@@ -199,6 +200,8 @@ namespace PersonalLibraryAPI.Controllers
             try
             {
                 var friends = FileService.LoadFriends(FriendsFilePath);
+                _logger.LogInformation("Fetching all Friends from FriendFile...");
+
                 return Ok(friends);
             }
             catch (Exception ex)
@@ -220,6 +223,7 @@ namespace PersonalLibraryAPI.Controllers
 
                 if (friend == null)
                     return NotFound("Friend not found.");
+                _logger.LogInformation($"Fetching Friend Name {name} from FriendFile...");
 
                 return Ok(friend);
             }
@@ -241,6 +245,8 @@ namespace PersonalLibraryAPI.Controllers
 
                 var friends = FileService.LoadFriends(FriendsFilePath);
                 friends.Add(friend);
+                _logger.LogInformation($"Friend Added Successfully in FriendFile");
+
                 FileService.SaveFriends(friends, FriendsFilePath);
 
                 return CreatedAtAction(nameof(GetFriendFromFile), new { name = friend.Name }, friend);
@@ -271,6 +277,8 @@ namespace PersonalLibraryAPI.Controllers
                 friend.Phone = updated.Phone;
 
                 FileService.SaveFriends(friends, FriendsFilePath);
+                _logger.LogInformation($"Updated Friend with Name {name} In FriendFile...");
+
                 return Ok("Friend updated in file.");
             }
             catch (Exception ex)
@@ -303,6 +311,8 @@ namespace PersonalLibraryAPI.Controllers
                     friend.Phone = patch.Phone;
 
                 FileService.SaveFriends(friends, FriendsFilePath);
+                _logger.LogInformation($"Patched Friend with Name {name} In FriendFile...");
+
                 return Ok("Friend partially updated in file (PATCH).");
             }
             catch (Exception ex)
@@ -326,6 +336,7 @@ namespace PersonalLibraryAPI.Controllers
 
                 friends.Remove(friend);
                 FileService.SaveFriends(friends, FriendsFilePath);
+                _logger.LogInformation($"Deleted Friend with Name {name} In FriendFile...");
 
                 return Ok($"Friend {name} deleted from file.");
             }

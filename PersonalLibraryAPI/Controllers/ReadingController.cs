@@ -44,6 +44,8 @@ namespace PersonalLibraryAPI.Controllers
                     Title = b.Title,
                     Status = b.Status // enum, no .ToString()
                 });
+                _logger.LogInformation($"Fetchhing All ReadingProgress from Database...");
+
                 return Ok(result);
             }
             catch (Exception ex)
@@ -62,6 +64,7 @@ namespace PersonalLibraryAPI.Controllers
             {
                 bool ok = _dbService.StartReading(id);
                 if (!ok) return NotFound("Book not found.");
+                _logger.LogInformation($"Start Reading Book with Id : {id} Database...");
                 return Ok("Book status set to CurrentlyReading.");
             }
             catch (Exception ex)
@@ -80,6 +83,7 @@ namespace PersonalLibraryAPI.Controllers
             {
                 bool ok = _dbService.FinishReading(id);
                 if (!ok) return NotFound("Book not found.");
+                _logger.LogInformation($"Finish Reading Book with Id : {id} Database...");
                 return Ok("Book status set to Finished.");
             }
             catch (Exception ex)
@@ -102,7 +106,7 @@ namespace PersonalLibraryAPI.Controllers
 
                 bool ok = _dbService.AddRatingReview(id, dto.Rating, dto.Review);
                 if (!ok) return NotFound("Book not found.");
-
+                _logger.LogInformation($"Added Rating & Review of Book with Id : {id} in Database...");
                 return Ok("Rating & review saved.");
             }
             catch (Exception ex)
@@ -129,7 +133,7 @@ namespace PersonalLibraryAPI.Controllers
                     Rating = book.Rating,
                     Review = book.Review
                 };
-
+                _logger.LogInformation($"Fetchhing Review of Book with ID:{id} from Database...");
                 return Ok(dto);
             }
             catch (Exception ex)
@@ -159,11 +163,13 @@ namespace PersonalLibraryAPI.Controllers
                     Title = b.Title,
                     Status = b.Status // enum, no .ToString()
                 });
+                _logger.LogInformation($"Fetchhing All ReadingProgress from FileService...");
+
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching reading status from file");
+                _logger.LogError(ex, "Error fetching reading status from File");
                 return StatusCode(500, "Internal server error.");
             }
         }
@@ -177,6 +183,7 @@ namespace PersonalLibraryAPI.Controllers
             {
                 bool ok = FileService.UpdateBookStatusFile(BooksFilePath, id, BookStatus.CurrentlyReading);
                 if (!ok) return NotFound("Book not found in file.");
+                _logger.LogInformation($"Start Reading Book with Id : {id} in Files...");
                 return Ok("Book status set to CurrentlyReading (file).");
             }
             catch (Exception ex)
@@ -195,6 +202,7 @@ namespace PersonalLibraryAPI.Controllers
             {
                 bool ok = FileService.UpdateBookStatusFile(BooksFilePath, id, BookStatus.Finished, setDateFinished: true);
                 if (!ok) return NotFound("Book not found in file.");
+                _logger.LogInformation($"Finish Reading Book with Id : {id} in Files...");
                 return Ok("Book status set to Finished (file).");
             }
             catch (Exception ex)
@@ -217,7 +225,7 @@ namespace PersonalLibraryAPI.Controllers
 
                 bool ok = FileService.UpdateRatingReviewFile(BooksFilePath, id, dto.Rating, dto.Review);
                 if (!ok) return NotFound("Book not found in file.");
-
+                _logger.LogInformation($"Added Rating & Review of Book with Id : {id} in FileService...");
                 return Ok("Rating & review saved (file).");
             }
             catch (Exception ex)
@@ -245,7 +253,7 @@ namespace PersonalLibraryAPI.Controllers
                     Rating = book.Rating,
                     Review = book.Review
                 };
-
+                _logger.LogInformation($"Fetching Review of Book with Id : {id} from FileService...");
                 return Ok(dto);
             }
             catch (Exception ex)
