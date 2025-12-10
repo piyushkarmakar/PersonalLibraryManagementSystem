@@ -1,0 +1,86 @@
+2025-12-09 09:34:30 [Information] Now listening on: https://localhost:7185
+2025-12-09 09:34:31 [Information] Now listening on: http://localhost:5140
+2025-12-09 09:34:31 [Information] Application started. Press Ctrl+C to shut down.
+2025-12-09 09:34:31 [Information] Hosting environment: Development
+2025-12-09 09:34:31 [Information] Content root path: C:\ASP .NET\PersonalLibraryManagementSystem\PersonalLibraryAPI
+2025-12-09 09:36:14 [Information] Fetching all books from database...
+2025-12-09 09:37:14 [Information] Fetchhing All lendingRecord from DataBase...
+2025-12-09 09:37:59 [Information] Now listening on: https://localhost:7185
+2025-12-09 09:37:59 [Information] Now listening on: http://localhost:5140
+2025-12-09 09:37:59 [Information] Application started. Press Ctrl+C to shut down.
+2025-12-09 09:38:00 [Information] Hosting environment: Development
+2025-12-09 09:38:00 [Information] Content root path: C:\ASP .NET\PersonalLibraryManagementSystem\PersonalLibraryAPI
+2025-12-09 10:35:50 [Information] Now listening on: https://localhost:7185
+2025-12-09 10:35:50 [Information] Now listening on: http://localhost:5140
+2025-12-09 10:35:51 [Information] Application started. Press Ctrl+C to shut down.
+2025-12-09 10:35:51 [Information] Hosting environment: Development
+2025-12-09 10:35:51 [Information] Content root path: C:\ASP .NET\PersonalLibraryManagementSystem\PersonalLibraryAPI
+2025-12-09 10:36:13 [Information] Fetching all books from database...
+2025-12-09 10:36:54 [Error] Error adding book to DB
+Microsoft.Data.SqlClient.SqlException (0x80131904): Violation of PRIMARY KEY constraint 'PK__Books__3214EC0703C113DA'. Cannot insert duplicate key in object 'dbo.Books'. The duplicate key value is (5).
+The statement has been terminated.
+   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at Microsoft.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean isAsync, Int32 timeout, Task& task, Boolean asyncWrite, Boolean inRetry, SqlDataReader ds, Boolean describeParameterEncryptionRequest)
+   at Microsoft.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean& usedCache, Boolean asyncWrite, Boolean inRetry, String method)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalExecuteNonQuery(TaskCompletionSource`1 completion, Boolean sendToPipe, Int32 timeout, Boolean& usedCache, Boolean asyncWrite, Boolean inRetry, String methodName)
+   at Microsoft.Data.SqlClient.SqlCommand.ExecuteNonQuery()
+   at PersonalLibraryManagementSystem.Services.DatabaseService.AddBook(Book book) in C:\ASP .NET\PersonalLibraryManagementSystem\PersonalLibraryManagementSystem\Services\DatabaseService.cs:line 40
+   at PersonalLibraryAPI.Controllers.BooksController.AddBookToDb(Book book) in C:\ASP .NET\PersonalLibraryManagementSystem\PersonalLibraryAPI\Controllers\BooksController.cs:line 102
+ClientConnectionId:3da2529e-891e-473a-85bd-a66d4a8569ce
+Error Number:2627,State:1,Class:14
+2025-12-09 10:38:23 [Information] Fetching all books from database...
+2025-12-09 11:33:53 [Information] Fetching all books from database...
+2025-12-09 11:35:02 [Information] Fetching all books from database...
+2025-12-09 11:36:01 [Information] Book Added Succesfully in DB
+2025-12-09 11:36:22 [Information] Fetching all books from database...
+2025-12-09 11:38:26 [Information] Book Added Succesfully in DB
+2025-12-09 11:42:44 [Information] Now listening on: https://localhost:7185
+2025-12-09 11:42:46 [Information] Now listening on: http://localhost:5140
+2025-12-09 11:42:47 [Information] Application started. Press Ctrl+C to shut down.
+2025-12-09 11:42:47 [Information] Hosting environment: Development
+2025-12-09 11:42:47 [Information] Content root path: C:\ASP .NET\PersonalLibraryManagementSystem\PersonalLibraryAPI
+2025-12-09 11:46:18 [Information] Fetching all books from database...
+2025-12-09 11:46:36 [Information] Book with ID 6 deleted from DB
+2025-12-09 11:46:37 [Information] Book with ID 6 deleted from DB
+2025-12-09 11:46:40 [Information] Book with ID 7 deleted from DB
+2025-12-09 11:46:41 [Information] Book with ID 7 deleted from DB
+2025-12-09 12:03:02 [Information] Now listening on: https://localhost:7185
+2025-12-09 12:03:03 [Information] Now listening on: http://localhost:5140
+2025-12-09 12:03:03 [Information] Application started. Press Ctrl+C to shut down.
+2025-12-09 12:03:03 [Information] Hosting environment: Development
+2025-12-09 12:03:03 [Information] Content root path: C:\ASP .NET\PersonalLibraryManagementSystem\PersonalLibraryAPI
+2025-12-09 12:03:09 [Information] Fetching all books from database...
+2025-12-09 12:09:01 [Information] Now listening on: https://localhost:7185
+2025-12-09 12:09:01 [Information] Now listening on: http://localhost:5140
+2025-12-09 12:09:01 [Information] Application started. Press Ctrl+C to shut down.
+2025-12-09 12:09:01 [Information] Hosting environment: Development
+2025-12-09 12:09:01 [Information] Content root path: C:\ASP .NET\PersonalLibraryManagementSystem\PersonalLibraryAPI
+2025-12-09 12:09:32 [Information] Fetching all books from database...
+2025-12-09 12:18:38 [Information] Now listening on: https://localhost:7185
+2025-12-09 12:18:39 [Information] Now listening on: http://localhost:5140
+2025-12-09 12:18:39 [Information] Application started. Press Ctrl+C to shut down.
+2025-12-09 12:18:39 [Information] Hosting environment: Development
+2025-12-09 12:18:39 [Information] Content root path: C:\ASP .NET\PersonalLibraryManagementSystem\PersonalLibraryAPI
+2025-12-09 14:24:14 [Information] Now listening on: https://localhost:7185
+2025-12-09 14:24:15 [Information] Now listening on: http://localhost:5140
+2025-12-09 14:24:15 [Information] Application started. Press Ctrl+C to shut down.
+2025-12-09 14:24:16 [Information] Hosting environment: Development
+2025-12-09 14:24:16 [Information] Content root path: C:\ASP .NET\PersonalLibraryManagementSystem\PersonalLibraryAPI
+2025-12-09 14:37:53 [Information] Now listening on: https://localhost:7185
+2025-12-09 14:37:54 [Information] Now listening on: http://localhost:5140
+2025-12-09 14:37:54 [Information] Application started. Press Ctrl+C to shut down.
+2025-12-09 14:37:55 [Information] Hosting environment: Development
+2025-12-09 14:37:55 [Information] Content root path: C:\ASP .NET\PersonalLibraryManagementSystem\PersonalLibraryAPI
+2025-12-09 14:38:13 [Warning] MODEL VALIDATION FAILED (ApiBehaviorOptions) → Title cannot exceed 100 characters
+2025-12-09 14:38:13 [Warning] MODEL VALIDATION FAILED → Title cannot exceed 100 characters
+2025-12-09 14:53:13 [Information] Now listening on: https://localhost:7185
+2025-12-09 14:53:14 [Information] Now listening on: http://localhost:5140
+2025-12-09 14:53:14 [Information] Application started. Press Ctrl+C to shut down.
+2025-12-09 14:53:14 [Information] Hosting environment: Development
+2025-12-09 14:53:14 [Information] Content root path: C:\ASP .NET\PersonalLibraryManagementSystem\PersonalLibraryAPI
+2025-12-09 14:53:39 [Warning] MODEL VALIDATION FAILED (ApiBehaviorOptions) → Rating must be between 0 and 5
+2025-12-09 14:53:39 [Warning] MODEL VALIDATION FAILED → Rating must be between 0 and 5

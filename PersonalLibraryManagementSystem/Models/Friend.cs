@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+
 
 namespace PersonalLibraryManagementSystem.Models
 {
@@ -11,8 +13,17 @@ namespace PersonalLibraryManagementSystem.Models
         {
 
             public int Id { get; set; }
+
+            [Required(ErrorMessage = "Friend name is required")]
+            [MaxLength(60)]
             public string Name { get; set; }
+
+            [Required(ErrorMessage = "Email is required")]
+            [EmailAddress(ErrorMessage = "Invalid email format")]
             public string Email { get; set; }
+
+            [Required]
+            [Phone(ErrorMessage = "Invalid phone number")]
             public string Phone { get; set; }
 
 
