@@ -1,0 +1,27 @@
+.home-banner {
+  width: 100vw;                 
+  min-height: calc(100vh - 50px);
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+
+  padding: 40px;
+  box-sizing: border-box;
+
+  margin: 0;
+}
+
+.home-title {
+  color: white;
+  font-size: 32px;
+  font-weight: 600;
+
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px 16px;
+  border-radius: 8px;
+}
