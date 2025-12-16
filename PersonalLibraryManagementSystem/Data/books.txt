@@ -5,4 +5,5 @@ ID|BookName|Author|Genre|Status|Rating|DateAdded|DateStarted|DateFinished|Review
 2|MahaBharat|Ved Vyas|Mythology|CurrentlyReading|5|10/23/2025 10:38:48 AM|10/30/2025 10:48:56 AM||If you want to know proper politics please watch Mahabharat|True
 3|Experiment in Plant Hybridisation|Sir John Gregor Mendel|Biography|CurrentlyReading|3|10/23/2025 11:01:26 AM|||Sir John Gregor Mendel is done best experiment using the pea tree to prove inheritance theory |False
 4|The Hidden Tressure|Akshat Gupta|Mythology|Finished|4|10/30/2025 7:53:53 AM|12/4/2025 2:04:55 PM|12/4/2025 2:05:29 PM|All the hidden secreats on hindus written here|False
-5|Origin of Species|Charles Darwin|Mystery|Finished|4|11/8/2025 9:51:07 PM|11/8/2025 10:58:14 PM|11/8/2025 11:00:12 PM|This must read by all biology students|False
+6|The Silent Horizon|Arun Prakash|Fiction|ToRead|4|12/12/2025 11:36:44 AM|12/12/2025 11:00:00 AM|12/12/2025 2:30:00 PM|A well-written novel with strong character development.|False
+7|The Silent Horizon|Arun Prakash|Fiction|ToRead|4|12/12/2025 12:22:58 PM|12/12/2025 11:00:00 AM|12/12/2025 2:30:00 PM|A well-written novel with strong character development.|False
