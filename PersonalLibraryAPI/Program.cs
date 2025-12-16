@@ -65,9 +65,22 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters
             .Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
-
 // ----------------------------------------------------
-// 4. Register Services
+// 4. CORS (REQUIRED FOR REACT)
+// ----------------------------------------------------
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReact",
+        policy =>
+        {
+            policy
+                .WithOrigins("http://localhost:5173")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+// ----------------------------------------------------
+// 5. Register Services
 // ----------------------------------------------------
 builder.Services.AddSingleton(new DatabaseService(connectionString));
 builder.Services.AddSingleton<LibraryManager>();
@@ -75,7 +88,7 @@ builder.Services.AddSingleton<FriendManager>();
 builder.Services.AddSingleton<LendingManager>();
 
 // ----------------------------------------------------
-// 5. Swagger
+// 6. Swagger
 // ----------------------------------------------------
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c => { 
@@ -99,6 +112,7 @@ app.UseSwaggerUI(c =>
 });
 
 app.UseRouting();
+app.UseCors("AllowReact");
 
 // Custom Validation Middleware
 app.UseMiddleware<ValidationLoggingMiddleware>();
