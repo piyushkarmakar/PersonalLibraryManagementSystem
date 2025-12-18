@@ -1,36 +1,28 @@
-import { useEffect, useState } from "react";
-import api from "../api/axios";
+import { Link, Outlet } from "react-router-dom";
+import "./Books.css";
 
 function Books() {
-  const [books, setBooks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    api.get("/db/books")
-      .then(response => {
-        setBooks(response.data);
-        setLoading(false);
-      })
-      .catch(err => {
-        setError("Failed to load books");
-        setLoading(false);
-      });
-  }, []);
-
-  if (loading) return <p>Loading books...</p>;
-  if (error) return <p>{error}</p>;
-
   return (
-    <div>
-      <h2>Books</h2>
-      <ul>
-        {books.map(book => (
-          <li key={book.id}>
-            {book.title} — {book.author}
-          </li>
-        ))}
-      </ul>
+    <div className="books-page">
+      {/* Page Header */}
+      <div className="books-header">
+        <p>Manage your personal library collection</p>
+      </div>
+
+      {/* Action Bar */}
+      <div className="books-actions">
+        <Link to="/books/add">Add Book</Link>
+        <Link to="/books/all">View All</Link>
+        <Link to="/books/view">View by ID</Link>
+        <Link to="/books/update">Update</Link>
+        <Link to="/books/patch">Patch</Link>
+        <Link to="/books/delete">Delete</Link>
+      </div>
+
+      {/* Content Area */}
+      <div className="books-content">
+        <Outlet />
+      </div>
     </div>
   );
 }

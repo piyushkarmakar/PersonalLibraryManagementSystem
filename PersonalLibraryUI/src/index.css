@@ -28,6 +28,12 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+    background: linear-gradient(
+    to right,
+    #0f0f0f 0%,
+    #141414 50%,
+    #0f0f0f 100%
+  );
 }
 
 h1 {
@@ -66,3 +72,14 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #0f0f0f;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+#root {
+  min-height: 100vh;
+}
+
